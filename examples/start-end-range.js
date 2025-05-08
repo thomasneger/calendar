@@ -33,7 +33,7 @@ class Picker extends React.Component {
   onHoverChange = (hoverValue) => {
     console.log(hoverValue);
     this.setState({ hoverValue });
-  }
+  };
 
   render() {
     const props = this.props;
@@ -48,7 +48,8 @@ class Picker extends React.Component {
         format={format}
         onChange={props.onChange}
         disabledDate={props.disabledDate}
-      />);
+      />
+    );
     return (
       <DatePicker
         open={this.props.open}
@@ -56,21 +57,20 @@ class Picker extends React.Component {
         calendar={calendar}
         value={props.value}
       >
-        {
-          () => {
-            return (
-              <span>
-                <input
-                  placeholder="请选择日期"
-                  style={{ width: 250 }}
-                  readOnly
-                  value={showValue && showValue.format(fullFormat) || ''}
-                />
-                </span>
-            );
-          }
-        }
-      </DatePicker>);
+        {() => {
+          return (
+            <span>
+              <input
+                placeholder="请选择日期"
+                style={{ width: 250 }}
+                readOnly
+                value={(showValue && showValue.format(fullFormat)) || ''}
+              />
+            </span>
+          );
+        }}
+      </DatePicker>
+    );
   }
 }
 
@@ -86,13 +86,13 @@ class Demo extends React.Component {
     this.setState({
       startOpen,
     });
-  }
+  };
 
   onEndOpenChange = (endOpen) => {
     this.setState({
       endOpen,
     });
-  }
+  };
 
   onStartChange = (value) => {
     this.setState({
@@ -100,13 +100,13 @@ class Demo extends React.Component {
       startOpen: false,
       endOpen: true,
     });
-  }
+  };
 
   onEndChange = (value) => {
     this.setState({
       endValue: value[1],
     });
-  }
+  };
 
   disabledStartDate = (endValue) => {
     if (!endValue) {
@@ -117,7 +117,7 @@ class Demo extends React.Component {
       return false;
     }
     return endValue.diff(startValue, 'days') < 0;
-  }
+  };
 
   render() {
     const state = this.state;
@@ -147,9 +147,9 @@ class Demo extends React.Component {
             onChange={this.onEndChange}
           />
         </p>
-      </div>);
+      </div>
+    );
   }
 }
-
 
 ReactDOM.render(<Demo />, document.getElementById('__react-content'));

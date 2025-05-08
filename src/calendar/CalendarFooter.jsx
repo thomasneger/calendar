@@ -20,7 +20,7 @@ export default class CalendarFooter extends React.Component {
     renderFooter: PropTypes.func,
     defaultValue: PropTypes.object,
     mode: PropTypes.string,
-  }
+  };
 
   onSelect(value) {
     this.props.onSelect(value);
@@ -41,7 +41,7 @@ export default class CalendarFooter extends React.Component {
         nowEl = <TodayButton {...props} value={value} />;
       }
       let okBtn;
-      if (showOk === true || showOk !== false && !!props.timePicker) {
+      if (showOk === true || (showOk !== false && !!props.timePicker)) {
         okBtn = <OkButton {...props} />;
       }
       let timePickerBtn;
@@ -61,11 +61,7 @@ export default class CalendarFooter extends React.Component {
       const cls = cx(`${prefixCls}-footer`, {
         [`${prefixCls}-footer-show-ok`]: okBtn,
       });
-      footerEl = (
-        <div className={cls}>
-          {footerBtn}
-        </div>
-      );
+      footerEl = <div className={cls}>{footerBtn}</div>;
     }
     return footerEl;
   }

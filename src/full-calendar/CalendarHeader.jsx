@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { getMonthName } from '../util';
 
-function noop() {
-}
+function noop() {}
 
 class CalendarHeader extends Component {
   onYearChange(year) {
@@ -37,7 +36,7 @@ class CalendarHeader extends Component {
         value={String(year)}
         showSearch={false}
       >
-        { options }
+        {options}
       </Select>
     );
   }
@@ -52,9 +51,7 @@ class CalendarHeader extends Component {
     for (let index = 0; index < 12; index++) {
       t.month(index);
       options.push(
-        <Select.Option key={`${index}`}>
-          {getMonthName(t)}
-        </Select.Option>
+        <Select.Option key={`${index}`}>{getMonthName(t)}</Select.Option>,
       );
     }
 
@@ -62,13 +59,18 @@ class CalendarHeader extends Component {
       <Select
         className={`${prefixCls}-header-month-select`}
         dropdownStyle={{ zIndex: 2000 }}
-        dropdownMenuStyle={{ maxHeight: 250, overflow: 'auto', overflowX: 'hidden', fontSize: 12 }}
+        dropdownMenuStyle={{
+          maxHeight: 250,
+          overflow: 'auto',
+          overflowX: 'hidden',
+          fontSize: 12,
+        }}
         optionLabelProp="children"
         value={String(month)}
         showSearch={false}
         onChange={this.onMonthChange.bind(this)}
       >
-        { options }
+        {options}
       </Select>
     );
   }
@@ -82,41 +84,45 @@ class CalendarHeader extends Component {
   }
 
   render() {
-    const { value, locale, prefixCls, type, showTypeSwitch, headerComponents } = this.props;
+    const { value, locale, prefixCls, type, showTypeSwitch, headerComponents } =
+      this.props;
     const year = value.year();
     const month = value.month();
     const yearSelect = this.yearSelectElement(year);
-    const monthSelect = type === 'month' ? null : this.monthSelectElement(month);
+    const monthSelect =
+      type === 'month' ? null : this.monthSelectElement(month);
     const switchCls = `${prefixCls}-header-switcher`;
     const typeSwitcher = showTypeSwitch ? (
       <span className={switchCls}>
-        { type === 'date' ?
-          <span className={`${switchCls}-focus`}>{locale.month}</span> :
+        {type === 'date' ? (
+          <span className={`${switchCls}-focus`}>{locale.month}</span>
+        ) : (
           <span
             onClick={this.changeTypeToDate.bind(this)}
             className={`${switchCls}-normal`}
           >
             {locale.month}
           </span>
-        }
-        { type === 'month' ?
-          <span className={`${switchCls}-focus`}>{locale.year}</span> :
+        )}
+        {type === 'month' ? (
+          <span className={`${switchCls}-focus`}>{locale.year}</span>
+        ) : (
           <span
             onClick={this.changeTypeToMonth.bind(this)}
             className={`${switchCls}-normal`}
           >
             {locale.year}
           </span>
-        }
+        )}
       </span>
     ) : null;
 
     return (
       <div className={`${prefixCls}-header`}>
-        { typeSwitcher }
-        { monthSelect }
-        { yearSelect }
-        { headerComponents }
+        {typeSwitcher}
+        {monthSelect}
+        {yearSelect}
+        {headerComponents}
       </div>
     );
   }

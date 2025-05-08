@@ -16,7 +16,10 @@ class DateInput extends React.Component {
     timePicker: PropTypes.object,
     value: PropTypes.object,
     disabledTime: PropTypes.any,
-    format: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+    format: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ]),
     locale: PropTypes.object,
     disabledDate: PropTypes.func,
     onChange: PropTypes.func,
@@ -26,7 +29,7 @@ class DateInput extends React.Component {
     selectedValue: PropTypes.object,
     clearIcon: PropTypes.node,
     inputMode: PropTypes.string,
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -40,9 +43,16 @@ class DateInput extends React.Component {
   }
 
   componentDidUpdate() {
-    if (dateInputInstance && this.state.hasFocus && !this.state.invalid &&
-      !(cachedSelectionStart === 0 && cachedSelectionEnd === 0)) {
-      dateInputInstance.setSelectionRange(cachedSelectionStart, cachedSelectionEnd);
+    if (
+      dateInputInstance &&
+      this.state.hasFocus &&
+      !this.state.invalid &&
+      !(cachedSelectionStart === 0 && cachedSelectionEnd === 0)
+    ) {
+      dateInputInstance.setSelectionRange(
+        cachedSelectionStart,
+        cachedSelectionEnd,
+      );
     }
   }
 
@@ -51,7 +61,7 @@ class DateInput extends React.Component {
       str: '',
     });
     this.props.onClear(null);
-  }
+  };
 
   onInputChange = (event) => {
     const str = event.target.value;
@@ -94,27 +104,28 @@ class DateInput extends React.Component {
       return;
     }
 
-    if (selectedValue !== value || (
-      selectedValue && value && !selectedValue.isSame(value)
-    )) {
+    if (
+      selectedValue !== value ||
+      (selectedValue && value && !selectedValue.isSame(value))
+    ) {
       this.setState({
         invalid: false,
         str,
       });
       onChange(value);
     }
-  }
+  };
 
   onFocus = () => {
     this.setState({ hasFocus: true });
-  }
+  };
 
   onBlur = () => {
     this.setState((prevState, prevProps) => ({
       hasFocus: false,
       str: formatDate(prevProps.value, prevProps.format),
     }));
-  }
+  };
 
   onKeyDown = (event) => {
     const { keyCode } = event;
@@ -153,17 +164,17 @@ class DateInput extends React.Component {
 
   getRootDOMNode = () => {
     return ReactDOM.findDOMNode(this);
-  }
+  };
 
   focus = () => {
     if (dateInputInstance) {
       dateInputInstance.focus();
     }
-  }
+  };
 
   saveDateInput = (dateInput) => {
     dateInputInstance = dateInput;
-  }
+  };
 
   render() {
     const props = this.props;
@@ -187,11 +198,7 @@ class DateInput extends React.Component {
           />
         </div>
         {props.showClear ? (
-          <a
-            role="button"
-            title={locale.clear}
-            onClick={this.onClear}
-          >
+          <a role="button" title={locale.clear} onClick={this.onClear}>
             {clearIcon || <span className={`${prefixCls}-clear-btn`} />}
           </a>
         ) : null}

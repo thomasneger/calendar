@@ -13,8 +13,13 @@ export default class DateTHead extends React.Component {
     const firstDayOfWeek = localeData.firstDayOfWeek();
     let showWeekNumberEl;
     const now = moment();
-    for (let dateColIndex = 0; dateColIndex < DateConstants.DATE_COL_COUNT; dateColIndex++) {
-      const index = (firstDayOfWeek + dateColIndex) % DateConstants.DATE_COL_COUNT;
+    for (
+      let dateColIndex = 0;
+      dateColIndex < DateConstants.DATE_COL_COUNT;
+      dateColIndex++
+    ) {
+      const index =
+        (firstDayOfWeek + dateColIndex) % DateConstants.DATE_COL_COUNT;
       now.day(index);
       veryShortWeekdays[dateColIndex] = localeData.weekdaysMin(now);
       weekDays[dateColIndex] = localeData.weekdaysShort(now);
@@ -27,7 +32,8 @@ export default class DateTHead extends React.Component {
           className={`${prefixCls}-column-header ${prefixCls}-week-number-header`}
         >
           <span className={`${prefixCls}-column-header-inner`}>x</span>
-        </th>);
+        </th>
+      );
     }
     const weekDaysEls = weekDays.map((day, xindex) => {
       return (
@@ -38,15 +44,18 @@ export default class DateTHead extends React.Component {
           className={`${prefixCls}-column-header`}
         >
           <span className={`${prefixCls}-column-header-inner`}>
-          {veryShortWeekdays[xindex]}
+            {veryShortWeekdays[xindex]}
           </span>
-        </th>);
+        </th>
+      );
     });
-    return (<thead>
-    <tr role="row">
-      {showWeekNumberEl}
-      {weekDaysEls}
-    </tr>
-    </thead>);
+    return (
+      <thead>
+        <tr role="row">
+          {showWeekNumberEl}
+          {weekDaysEls}
+        </tr>
+      </thead>
+    );
   }
 }

@@ -60,7 +60,10 @@ export function isTimeValidByConfig(value, disabledTimeConfig) {
     if (disabledHours.indexOf(hour) === -1) {
       const disabledMinutes = disabledTimeConfig.disabledMinutes(hour);
       if (disabledMinutes.indexOf(minutes) === -1) {
-        const disabledSeconds = disabledTimeConfig.disabledSeconds(hour, minutes);
+        const disabledSeconds = disabledTimeConfig.disabledSeconds(
+          hour,
+          minutes,
+        );
         invalidTime = disabledSeconds.indexOf(seconds) !== -1;
       } else {
         invalidTime = true;

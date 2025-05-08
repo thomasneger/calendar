@@ -5,11 +5,9 @@ export default function OkButton({ prefixCls, locale, okDisabled, onOk }) {
   if (okDisabled) {
     className += ` ${prefixCls}-ok-btn-disabled`;
   }
-  return (<a
-    className={className}
-    role="button"
-    onClick={okDisabled ? null : onOk}
-  >
-    {locale.ok}
-  </a>);
+  return (
+    <a className={className} role="button" onClick={okDisabled ? null : onOk}>
+      {locale.ok}
+    </a>
+  );
 }

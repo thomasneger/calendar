@@ -7,9 +7,7 @@ function goYear(direction) {
   this.props.changeYear(direction);
 }
 
-function noop() {
-
-}
+function noop() {}
 
 class MonthPanel extends React.Component {
   static propTypes = {
@@ -20,12 +18,12 @@ class MonthPanel extends React.Component {
     rootPrefixCls: PropTypes.string,
     value: PropTypes.object,
     defaultValue: PropTypes.object,
-  }
+  };
 
   static defaultProps = {
     onChange: noop,
     onSelect: noop,
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -51,11 +49,10 @@ class MonthPanel extends React.Component {
     return newState;
   }
 
-
   setAndSelectValue = (value) => {
     this.setValue(value);
     this.props.onSelect(value);
-  }
+  };
 
   setValue = (value) => {
     if ('value' in this.props) {
@@ -63,7 +60,7 @@ class MonthPanel extends React.Component {
         value,
       });
     }
-  }
+  };
 
   render() {
     const props = this.props;
@@ -113,12 +110,10 @@ class MonthPanel extends React.Component {
               prefixCls={prefixCls}
             />
           </div>
-          {footer && (
-            <div className={`${prefixCls}-footer`}>
-              {footer}
-            </div>)}
+          {footer && <div className={`${prefixCls}-footer`}>{footer}</div>}
         </div>
-      </div>);
+      </div>
+    );
   }
 }
 

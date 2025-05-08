@@ -34,7 +34,10 @@ defaultCalendarValue.add(-1, 'month');
 
 const timePickerElement = (
   <TimePickerPanel
-    defaultValue={[moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')]}
+    defaultValue={[
+      moment('00:00:00', 'HH:mm:ss'),
+      moment('23:59:59', 'HH:mm:ss'),
+    ]}
   />
 );
 
@@ -51,7 +54,7 @@ function disabledDate(current) {
   date.hour(0);
   date.minute(0);
   date.second(0);
-  return current.isBefore(date);  // can not select days before today
+  return current.isBefore(date); // can not select days before today
 }
 
 function disabledTime(time, type) {
@@ -119,16 +122,16 @@ class Demo extends React.Component {
   state = {
     value: [],
     hoverValue: [],
-  }
+  };
 
   onChange = (value) => {
     console.log('onChange', value);
     this.setState({ value });
-  }
+  };
 
   onHoverChange = (hoverValue) => {
     this.setState({ hoverValue });
-  }
+  };
 
   render() {
     const state = this.state;
@@ -151,21 +154,26 @@ class Demo extends React.Component {
         animation="slide-up"
         calendar={calendar}
       >
-        {
-          ({ value }) => {
-            return (<span>
-                <input
-                  placeholder="please select"
-                  style={{ width: 350 }}
-                  disabled={state.disabled}
-                  readOnly
-                  className="ant-calendar-picker-input ant-input"
-                  value={isValidRange(value) && `${format(value[0])} - ${format(value[1])}` || ''}
-                />
-                </span>);
-          }
-        }
-      </Picker>);
+        {({ value }) => {
+          return (
+            <span>
+              <input
+                placeholder="please select"
+                style={{ width: 350 }}
+                disabled={state.disabled}
+                readOnly
+                className="ant-calendar-picker-input ant-input"
+                value={
+                  (isValidRange(value) &&
+                    `${format(value[0])} - ${format(value[1])}`) ||
+                  ''
+                }
+              />
+            </span>
+          );
+        }}
+      </Picker>
+    );
   }
 }
 
@@ -194,4 +202,6 @@ ReactDOM.render(
     <div style={{ margin: 20 }}>
       <Demo />
     </div>
-  </div>, document.getElementById('__react-content'));
+  </div>,
+  document.getElementById('__react-content'),
+);

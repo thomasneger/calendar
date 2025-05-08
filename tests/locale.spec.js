@@ -45,7 +45,7 @@ const locales = {
 };
 
 describe('locales', () => {
-  Object.keys(locales).forEach(localeCode => {
+  Object.keys(locales).forEach((localeCode) => {
     it(`renders ${localeCode} correctly`, () => {
       const wrapper = render(<Calendar locale={locales[localeCode]} />);
       expect(wrapper).toMatchSnapshot();

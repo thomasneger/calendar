@@ -7,30 +7,37 @@ import DatePicker from '../src/Picker';
 import RangeCalendar from '../src/RangeCalendar';
 import CalendarLocale from '../src/locale/en_US';
 
-const format = ('YYYY-MM-DD');
+const format = 'YYYY-MM-DD';
 const VALUE = moment([2015, 5, 1]);
 
 describe('DatePicker', () => {
-  function noop() {
-  }
+  function noop() {}
 
   function renderOne({ value }) {
-    return (<input
-      className="rc-calendar-picker-input"
-      onChange={noop}
-      readOnly
-      value={value && value.format(format)}
-    />);
+    return (
+      <input
+        className="rc-calendar-picker-input"
+        onChange={noop}
+        readOnly
+        value={value && value.format(format)}
+      />
+    );
   }
 
   function renderRange({ value }) {
-    return (<input
-      className="rc-calendar-picker-input"
-      onChange={noop}
-      readOnly
-      value={value && `${value[0] &&
-        value[0].format(format)} - ${value[1] && value[1].format(format)}`}
-    />);
+    return (
+      <input
+        className="rc-calendar-picker-input"
+        onChange={noop}
+        readOnly
+        value={
+          value &&
+          `${
+            value[0] && value[0].format(format)
+          } - ${value[1] && value[1].format(format)}`
+        }
+      />
+    );
   }
 
   function renderPicker(props, calendarProps, options) {
@@ -49,22 +56,20 @@ describe('DatePicker', () => {
       >
         {renderOne}
       </DatePicker>,
-        options
+      options,
     );
   }
 
   function renderRangePicker(props) {
-    return mount(<DatePicker
-      calendar={
-        <RangeCalendar
-          locale={CalendarLocale}
-        />
-      }
-      defaultValue={[VALUE, VALUE]}
-      {...props}
-    >
-      {renderRange}
-    </DatePicker>);
+    return mount(
+      <DatePicker
+        calendar={<RangeCalendar locale={CalendarLocale} />}
+        defaultValue={[VALUE, VALUE]}
+        {...props}
+      >
+        {renderRange}
+      </DatePicker>,
+    );
   }
 
   it('popup correctly', () => {
@@ -121,14 +126,21 @@ describe('DatePicker', () => {
     it('destroy correctly', () => {
       const picker = renderPicker();
       expect(picker.state().open).toBeFalsy();
-      const input = picker.find('.rc-calendar-picker-input').hostNodes().first();
+      const input = picker
+        .find('.rc-calendar-picker-input')
+        .hostNodes()
+        .first();
       input.simulate('click');
       expect(picker.find('.rc-calendar').hostNodes().first()).not.toBeFalsy();
       expect(picker.state().open).toEqual(true);
       expect(picker.find('.rc-calendar-picker').length).not.toEqual(0);
-      expect(picker.find('.rc-calendar-date').hostNodes().at(0)).not.toBeFalsy();
+      expect(
+        picker.find('.rc-calendar-date').hostNodes().at(0),
+      ).not.toBeFalsy();
       picker.unmount();
-      expect(document.querySelectorAll('.rc-calendar-picker').length).toEqual(0);
+      expect(document.querySelectorAll('.rc-calendar-picker').length).toEqual(
+        0,
+      );
       expect(picker.calendarInstance).toBeFalsy();
     });
   });
@@ -205,7 +217,10 @@ describe('DatePicker', () => {
     });
 
     it('not close on enter if disabled date', () => {
-      const picker = renderPicker({ value: moment() }, { disabledDate: () => true });
+      const picker = renderPicker(
+        { value: moment() },
+        { disabledDate: () => true },
+      );
       picker.find('.rc-calendar-picker-input').simulate('click');
       picker.find('.rc-calendar-input').simulate('keyDown', {
         keyCode: keyCode.ENTER,
@@ -242,9 +257,13 @@ describe('DatePicker', () => {
 
     it('call onBlur when focus is outside of picker', () => {
       const handleOnBlur = jest.fn();
-      const picker = renderPicker({ value: moment() }, { onBlur: handleOnBlur }, {
-        attachTo: container,
-      });
+      const picker = renderPicker(
+        { value: moment() },
+        { onBlur: handleOnBlur },
+        {
+          attachTo: container,
+        },
+      );
 
       picker.find('.rc-calendar-picker-input').simulate('click');
       jest.runAllTimers();
@@ -270,9 +289,13 @@ describe('DatePicker', () => {
 
     it('does not call onBlur when clicking on calendar next month', () => {
       const handleOnBlur = jest.fn();
-      const picker = renderPicker({ value: moment() }, { onBlur: handleOnBlur }, {
-        attachTo: container,
-      });
+      const picker = renderPicker(
+        { value: moment() },
+        { onBlur: handleOnBlur },
+        {
+          attachTo: container,
+        },
+      );
 
       picker.find('.rc-calendar-picker-input').simulate('click');
       jest.runAllTimers();

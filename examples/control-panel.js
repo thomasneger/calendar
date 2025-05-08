@@ -28,15 +28,15 @@ class Demo extends React.Component {
         [key]: mode,
       });
     }.bind(this);
-  }
+  };
 
   handlePanelChange = (...args) => {
     console.log('on panel change', ...args);
-  }
+  };
 
   handleRangePanelChange = (...args) => {
     console.log('on range panel change', ...args);
-  }
+  };
 
   render() {
     return (
@@ -47,8 +47,10 @@ class Demo extends React.Component {
           style={{ width: 500 }}
           onChange={this.onModeChange('mode')}
         >
-          {['time', 'date', 'month', 'year', 'decade'].map(item => (
-            <option value={item} key={item}>{item}</option>
+          {['time', 'date', 'month', 'year', 'decade'].map((item) => (
+            <option value={item} key={item}>
+              {item}
+            </option>
           ))}
         </select>
         <Calendar
@@ -61,8 +63,10 @@ class Demo extends React.Component {
           style={{ width: 500 }}
           onChange={this.onModeChange('rangeStartMode')}
         >
-          {['date', 'month', 'year', 'decade'].map(item => (
-            <option value={item} key={item}>{item}</option>
+          {['date', 'month', 'year', 'decade'].map((item) => (
+            <option value={item} key={item}>
+              {item}
+            </option>
           ))}
         </select>
         <select
@@ -70,8 +74,10 @@ class Demo extends React.Component {
           style={{ width: 500 }}
           onChange={this.onModeChange('rangeEndMode')}
         >
-          {['date', 'month', 'year', 'decade'].map(item => (
-            <option value={item} key={item}>{item}</option>
+          {['date', 'month', 'year', 'decade'].map((item) => (
+            <option value={item} key={item}>
+              {item}
+            </option>
           ))}
         </select>
         <RangeCalendar

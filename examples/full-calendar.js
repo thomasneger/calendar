@@ -41,7 +41,7 @@ class Demo extends React.Component {
     this.setState({
       type,
     });
-  }
+  };
 
   render() {
     return (

@@ -10,8 +10,7 @@ const COL = 3;
 function noop() {}
 
 class MonthTable extends Component {
-  state = {
-  };
+  state = {};
 
   static getDerivedStateFromProps(props) {
     if ('value' in props) {
@@ -62,7 +61,7 @@ class MonthTable extends Component {
     const currentMonth = value.month();
     const { prefixCls, locale, contentRender, cellRender } = props;
     const monthsEls = months.map((month, index) => {
-      const tds = month.map(monthData => {
+      const tds = month.map((monthData) => {
         let disabled = false;
         if (props.disabledDate) {
           const testValue = value.clone();
@@ -73,8 +72,8 @@ class MonthTable extends Component {
           [`${prefixCls}-cell`]: 1,
           [`${prefixCls}-cell-disabled`]: disabled,
           [`${prefixCls}-selected-cell`]: monthData.value === currentMonth,
-          [`${prefixCls}-current-cell`]: today.year() === value.year() &&
-          monthData.value === today.month(),
+          [`${prefixCls}-current-cell`]:
+            today.year() === value.year() && monthData.value === today.month(),
         };
         let cellEl;
         if (cellRender) {
@@ -90,11 +89,7 @@ class MonthTable extends Component {
           } else {
             content = monthData.content;
           }
-          cellEl = (
-            <a className={`${prefixCls}-month`}>
-              {content}
-            </a>
-          );
+          cellEl = <a className={`${prefixCls}-month`}>{content}</a>;
         }
         return (
           <td
@@ -105,16 +100,19 @@ class MonthTable extends Component {
             className={classnames(classNameMap)}
           >
             {cellEl}
-          </td>);
+          </td>
+        );
       });
-      return (<tr key={index} role="row">{tds}</tr>);
+      return (
+        <tr key={index} role="row">
+          {tds}
+        </tr>
+      );
     });
 
     return (
       <table className={`${prefixCls}-table`} cellSpacing="0" role="grid">
-        <tbody className={`${prefixCls}-tbody`}>
-        {monthsEls}
-        </tbody>
+        <tbody className={`${prefixCls}-tbody`}>{monthsEls}</tbody>
       </table>
     );
   }

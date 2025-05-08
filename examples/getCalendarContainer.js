@@ -44,50 +44,50 @@ class Demo extends React.Component {
 
   open = () => {
     this.setVisible(true);
-  }
+  };
 
   close = () => {
     this.setVisible(false);
-  }
+  };
 
   destroy = () => {
     this.setState({
       destroy: true,
     });
-  }
+  };
 
   render() {
     if (this.state.destroy) {
       return null;
     }
-    return (<div>
-      <button onClick={this.open}>open</button>
-      &nbsp;
-      <button onClick={this.destroy}>destroy</button>
-      <Dialog visible={this.state.open} onClose={this.close}>
-        <div id="d" ref={n => (this.d = n)} />
-        <div style={{ marginTop: 20 }}>
-          <DatePicker
-            getCalendarContainer={this.getCalendarContainer}
-            calendar={<Calendar locale={cn ? zhCN : enUS}/>}
-          >
-            {
-              ({ value }) => {
+    return (
+      <div>
+        <button onClick={this.open}>open</button>
+        &nbsp;
+        <button onClick={this.destroy}>destroy</button>
+        <Dialog visible={this.state.open} onClose={this.close}>
+          <div id="d" ref={(n) => (this.d = n)} />
+          <div style={{ marginTop: 20 }}>
+            <DatePicker
+              getCalendarContainer={this.getCalendarContainer}
+              calendar={<Calendar locale={cn ? zhCN : enUS} />}
+            >
+              {({ value }) => {
                 return (
                   <span>
-                <input
-                  style={{ width: 250 }}
-                  readOnly
-                  value={value && value.format(format) || ''}
-                />
-                </span>
+                    <input
+                      style={{ width: 250 }}
+                      readOnly
+                      value={(value && value.format(format)) || ''}
+                    />
+                  </span>
                 );
-              }
-            }
-          </DatePicker>
-        </div>
-      </Dialog>
-    </div>);
+              }}
+            </DatePicker>
+          </div>
+        </Dialog>
+      </div>
+    );
   }
 }
 

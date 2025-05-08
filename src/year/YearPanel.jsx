@@ -66,7 +66,7 @@ export default class YearPanel extends React.Component {
     const prefixCls = this.prefixCls;
 
     const yeasEls = years.map((row, index) => {
-      const tds = row.map(yearData => {
+      const tds = row.map((yearData) => {
         const classNameMap = {
           [`${prefixCls}-cell`]: 1,
           [`${prefixCls}-selected-cell`]: yearData.year === currentYear,
@@ -89,14 +89,15 @@ export default class YearPanel extends React.Component {
             onClick={clickHandler}
             className={classnames(classNameMap)}
           >
-            <a
-              className={`${prefixCls}-year`}
-            >
-              {yearData.content}
-            </a>
-          </td>);
+            <a className={`${prefixCls}-year`}>{yearData.content}</a>
+          </td>
+        );
       });
-      return (<tr key={index} role="row">{tds}</tr>);
+      return (
+        <tr key={index} role="row">
+          {tds}
+        </tr>
+      );
     });
 
     const footer = renderFooter && renderFooter('year');
@@ -132,18 +133,14 @@ export default class YearPanel extends React.Component {
           </div>
           <div className={`${prefixCls}-body`}>
             <table className={`${prefixCls}-table`} cellSpacing="0" role="grid">
-              <tbody className={`${prefixCls}-tbody`}>
-                {yeasEls}
-              </tbody>
+              <tbody className={`${prefixCls}-tbody`}>{yeasEls}</tbody>
             </table>
           </div>
 
-          {footer && (
-            <div className={`${prefixCls}-footer`}>
-              {footer}
-            </div>)}
+          {footer && <div className={`${prefixCls}-footer`}>{footer}</div>}
         </div>
-      </div>);
+      </div>
+    );
   }
 }
 
@@ -155,6 +152,5 @@ YearPanel.propTypes = {
 };
 
 YearPanel.defaultProps = {
-  onSelect() {
-  },
+  onSelect() {},
 };

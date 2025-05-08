@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import enUs from '../locale/en_US';
 
-function noop() {
-}
+function noop() {}
 
 export const propType = {
   className: PropTypes.string,
@@ -32,41 +31,42 @@ export const defaultProp = {
   },
 };
 
-export const commonMixinWrapper = ComposeComponent => class extends ComposeComponent {
-  static displayName = 'CommonMixinWrapper';
-  static defaultProps = ComposeComponent.defaultProps;
-  static getDerivedStateFromProps = ComposeComponent.getDerivedStateFromProps;
+export const commonMixinWrapper = (ComposeComponent) =>
+  class extends ComposeComponent {
+    static displayName = 'CommonMixinWrapper';
+    static defaultProps = ComposeComponent.defaultProps;
+    static getDerivedStateFromProps = ComposeComponent.getDerivedStateFromProps;
 
-  shouldComponentUpdate(nextProps) {
-    return this.props.visible || nextProps.visible;
-  }
+    shouldComponentUpdate(nextProps) {
+      return this.props.visible || nextProps.visible;
+    }
 
-  getFormat = () => {
-    let { format } = this.props;
-    const { locale, timePicker } = this.props;
-    if (!format) {
-      if (timePicker) {
-        format = locale.dateTimeFormat;
-      } else {
-        format = locale.dateFormat;
+    getFormat = () => {
+      let { format } = this.props;
+      const { locale, timePicker } = this.props;
+      if (!format) {
+        if (timePicker) {
+          format = locale.dateTimeFormat;
+        } else {
+          format = locale.dateFormat;
+        }
       }
-    }
-    return format;
-  }
+      return format;
+    };
 
-  focus = () => {
-    if (this.focusElement) {
-      this.focusElement.focus();
-    } else if (this.rootInstance) {
-      this.rootInstance.focus();
-    }
-  }
+    focus = () => {
+      if (this.focusElement) {
+        this.focusElement.focus();
+      } else if (this.rootInstance) {
+        this.rootInstance.focus();
+      }
+    };
 
-  saveFocusElement = (focusElement) => {
-    this.focusElement = focusElement;
-  }
+    saveFocusElement = (focusElement) => {
+      this.focusElement = focusElement;
+    };
 
-  saveRoot = (root) => {
-    this.rootInstance = root;
-  }
-};
+    saveRoot = (root) => {
+      this.rootInstance = root;
+    };
+  };

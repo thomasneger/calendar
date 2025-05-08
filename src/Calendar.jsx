@@ -18,10 +18,9 @@ import { getTimeConfig, getTodayTime, syncTime } from './util';
 import { goStartMonth, goEndMonth, goTime } from './util/toTime';
 import moment from 'moment';
 
-function noop() {
-}
+function noop() {}
 
-const getMomentObjectIfValid = date => {
+const getMomentObjectIfValid = (date) => {
   if (moment.isMoment(date) && date.isValid()) {
     return date;
   }
@@ -62,7 +61,7 @@ class Calendar extends React.Component {
     focusablePanel: PropTypes.bool,
     inputMode: PropTypes.string,
     onBlur: PropTypes.func,
-  }
+  };
 
   static defaultProps = {
     ...calendarMixinDefaultProps,
@@ -73,16 +72,16 @@ class Calendar extends React.Component {
     onOk: noop,
     onPanelChange: noop,
     focusablePanel: true,
-  }
+  };
 
   constructor(props) {
     super(props);
     this.state = {
       mode: this.props.mode || 'date',
       value:
-          getMomentObjectIfValid(props.value) ||
-          getMomentObjectIfValid(props.defaultValue) ||
-          moment(),
+        getMomentObjectIfValid(props.value) ||
+        getMomentObjectIfValid(props.defaultValue) ||
+        moment(),
       selectedValue: props.selectedValue || props.defaultSelectedValue,
     };
   }
@@ -99,7 +98,7 @@ class Calendar extends React.Component {
       this.setState({ mode });
     }
     props.onPanelChange(value || state.value, mode);
-  }
+  };
 
   onKeyDown = (event) => {
     if (event.target.nodeName.toLowerCase() === 'input') {
@@ -136,15 +135,11 @@ class Calendar extends React.Component {
         event.preventDefault();
         return 1;
       case KeyCode.HOME:
-        this.setValue(
-          goStartMonth(this.state.value),
-        );
+        this.setValue(goStartMonth(this.state.value));
         event.preventDefault();
         return 1;
       case KeyCode.END:
-        this.setValue(
-          goEndMonth(this.state.value),
-        );
+        this.setValue(goEndMonth(this.state.value));
         event.preventDefault();
         return 1;
       case KeyCode.PAGE_DOWN:
@@ -167,31 +162,31 @@ class Calendar extends React.Component {
         this.props.onKeyDown(event);
         return 1;
     }
-  }
+  };
 
   onClear = () => {
     this.onSelect(null);
     this.props.onClear();
-  }
+  };
 
   onOk = () => {
     const { selectedValue } = this.state;
     if (this.isAllowedDate(selectedValue)) {
       this.props.onOk(selectedValue);
     }
-  }
+  };
 
   onDateInputChange = (value) => {
     this.onSelect(value, {
       source: 'dateInput',
     });
-  }
+  };
 
   onDateInputSelect = (value) => {
     this.onSelect(value, {
       source: 'dateInputSelect',
     });
-  }
+  };
 
   onDateTableSelect = (value) => {
     const { timePicker } = this.props;
@@ -203,7 +198,7 @@ class Calendar extends React.Component {
       }
     }
     this.onSelect(value);
-  }
+  };
 
   onToday = () => {
     const { value } = this.state;
@@ -211,15 +206,18 @@ class Calendar extends React.Component {
     this.onSelect(now, {
       source: 'todayButton',
     });
-  }
+  };
 
   onBlur = (event) => {
     setTimeout(() => {
       const dateInput = DateInput.getInstance();
       const rootInstance = this.rootInstance;
 
-      if (!rootInstance || rootInstance.contains(document.activeElement) ||
-      (dateInput && dateInput.contains(document.activeElement))) {
+      if (
+        !rootInstance ||
+        rootInstance.contains(document.activeElement) ||
+        (dateInput && dateInput.contains(document.activeElement))
+      ) {
         // focused element is still part of Calendar
         return;
       }
@@ -228,7 +226,7 @@ class Calendar extends React.Component {
         this.props.onBlur(event);
       }
     }, 0);
-  }
+  };
 
   static getDerivedStateFromProps(nextProps, state) {
     const { value, selectedValue } = nextProps;
@@ -239,9 +237,9 @@ class Calendar extends React.Component {
     }
     if ('value' in nextProps) {
       newState.value =
-          getMomentObjectIfValid(value) ||
-          getMomentObjectIfValid(nextProps.defaultValue) ||
-          getNowByCurrentStateValue(state.value);
+        getMomentObjectIfValid(value) ||
+        getMomentObjectIfValid(nextProps.defaultValue) ||
+        getNowByCurrentStateValue(state.value);
     }
     if ('selectedValue' in nextProps) {
       newState.selectedValue = selectedValue;
@@ -252,35 +250,41 @@ class Calendar extends React.Component {
 
   getRootDOMNode = () => {
     return ReactDOM.findDOMNode(this);
-  }
+  };
 
   openTimePicker = () => {
     this.onPanelChange(null, 'time');
-  }
+  };
 
   closeTimePicker = () => {
     this.onPanelChange(null, 'date');
-  }
-
+  };
 
   goTime = (direction, unit) => {
-    this.setValue(
-      goTime(this.state.value, direction, unit),
-    );
-  }
+    this.setValue(goTime(this.state.value, direction, unit));
+  };
 
   render() {
     const { props, state } = this;
     const {
-      locale, prefixCls, disabledDate,
-      dateInputPlaceholder, timePicker,
-      disabledTime, clearIcon, renderFooter, inputMode,
-      monthCellRender, monthCellContentRender,
+      locale,
+      prefixCls,
+      disabledDate,
+      dateInputPlaceholder,
+      timePicker,
+      disabledTime,
+      clearIcon,
+      renderFooter,
+      inputMode,
+      monthCellRender,
+      monthCellContentRender,
     } = props;
     const { value, selectedValue, mode } = state;
     const showTimePicker = mode === 'time';
-    const disabledTimeConfig = showTimePicker && disabledTime && timePicker ?
-      getTimeConfig(selectedValue, disabledTime) : null;
+    const disabledTimeConfig =
+      showTimePicker && disabledTime && timePicker
+        ? getTimeConfig(selectedValue, disabledTime)
+        : null;
 
     let timePickerEle = null;
 
@@ -327,70 +331,73 @@ class Calendar extends React.Component {
     if (props.renderSidebar) {
       children.push(props.renderSidebar());
     }
-    children.push(<div className={`${prefixCls}-panel`} key="panel">
-      {dateInputElement}
-      <div
-        tabIndex={this.props.focusablePanel ? 0 : undefined}
-        className={`${prefixCls}-date-panel`}
-      >
-        <CalendarHeader
-          locale={locale}
-          mode={mode}
-          value={value}
-          onValueChange={this.setValue}
-          onPanelChange={this.onPanelChange}
-          renderFooter={renderFooter}
-          showTimePicker={showTimePicker}
-          prefixCls={prefixCls}
-          monthCellRender={monthCellRender}
-          monthCellContentRender={monthCellContentRender}
-        />
-        {timePicker && showTimePicker ?
-          (<div className={`${prefixCls}-time-picker`}>
-            <div className={`${prefixCls}-time-picker-panel`}>
-              {timePickerEle}
-            </div>
-          </div>)
-          : null}
-        <div className={`${prefixCls}-body`}>
-          <DateTable
+    children.push(
+      <div className={`${prefixCls}-panel`} key="panel">
+        {dateInputElement}
+        <div
+          tabIndex={this.props.focusablePanel ? 0 : undefined}
+          className={`${prefixCls}-date-panel`}
+        >
+          <CalendarHeader
             locale={locale}
+            mode={mode}
             value={value}
-            selectedValue={selectedValue}
+            onValueChange={this.setValue}
+            onPanelChange={this.onPanelChange}
+            renderFooter={renderFooter}
+            showTimePicker={showTimePicker}
             prefixCls={prefixCls}
-            dateRender={props.dateRender}
-            onSelect={this.onDateTableSelect}
+            monthCellRender={monthCellRender}
+            monthCellContentRender={monthCellContentRender}
+          />
+          {timePicker && showTimePicker ? (
+            <div className={`${prefixCls}-time-picker`}>
+              <div className={`${prefixCls}-time-picker-panel`}>
+                {timePickerEle}
+              </div>
+            </div>
+          ) : null}
+          <div className={`${prefixCls}-body`}>
+            <DateTable
+              locale={locale}
+              value={value}
+              selectedValue={selectedValue}
+              prefixCls={prefixCls}
+              dateRender={props.dateRender}
+              onSelect={this.onDateTableSelect}
+              disabledDate={disabledDate}
+              showWeekNumber={props.showWeekNumber}
+            />
+          </div>
+
+          <CalendarFooter
+            showOk={props.showOk}
+            mode={mode}
+            renderFooter={props.renderFooter}
+            locale={locale}
+            prefixCls={prefixCls}
+            showToday={props.showToday}
+            disabledTime={disabledTime}
+            showTimePicker={showTimePicker}
+            showDateInput={props.showDateInput}
+            timePicker={timePicker}
+            selectedValue={selectedValue}
+            timePickerDisabled={!selectedValue}
+            value={value}
             disabledDate={disabledDate}
-            showWeekNumber={props.showWeekNumber}
+            okDisabled={
+              props.showOk !== false &&
+              (!selectedValue || !this.isAllowedDate(selectedValue))
+            }
+            onOk={this.onOk}
+            onSelect={this.onSelect}
+            onToday={this.onToday}
+            onOpenTimePicker={this.openTimePicker}
+            onCloseTimePicker={this.closeTimePicker}
           />
         </div>
-
-        <CalendarFooter
-          showOk={props.showOk}
-          mode={mode}
-          renderFooter={props.renderFooter}
-          locale={locale}
-          prefixCls={prefixCls}
-          showToday={props.showToday}
-          disabledTime={disabledTime}
-          showTimePicker={showTimePicker}
-          showDateInput={props.showDateInput}
-          timePicker={timePicker}
-          selectedValue={selectedValue}
-          timePickerDisabled={!selectedValue}
-          value={value}
-          disabledDate={disabledDate}
-          okDisabled={
-            props.showOk !== false && (!selectedValue || !this.isAllowedDate(selectedValue))
-          }
-          onOk={this.onOk}
-          onSelect={this.onSelect}
-          onToday={this.onToday}
-          onOpenTimePicker={this.openTimePicker}
-          onCloseTimePicker={this.closeTimePicker}
-        />
-      </div>
-    </div>);
+      </div>,
+    );
 
     return this.renderRoot({
       children,

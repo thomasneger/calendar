@@ -60,14 +60,15 @@ export default class DecadePanel extends React.Component {
     const footer = renderFooter && renderFooter('decade');
 
     const decadesEls = decades.map((row, decadeIndex) => {
-      const tds = row.map(decadeData => {
+      const tds = row.map((decadeData) => {
         const dStartDecade = decadeData.startDecade;
         const dEndDecade = decadeData.endDecade;
         const isLast = dStartDecade < startYear;
         const isNext = dEndDecade > endYear;
         const classNameMap = {
           [`${prefixCls}-cell`]: 1,
-          [`${prefixCls}-selected-cell`]: dStartDecade <= currentYear && currentYear <= dEndDecade,
+          [`${prefixCls}-selected-cell`]:
+            dStartDecade <= currentYear && currentYear <= dEndDecade,
           [`${prefixCls}-last-century-cell`]: isLast,
           [`${prefixCls}-next-century-cell`]: isNext,
         };
@@ -80,20 +81,22 @@ export default class DecadePanel extends React.Component {
         } else {
           clickHandler = chooseDecade.bind(this, dStartDecade);
         }
-        return (<td
-          key={dStartDecade}
-          onClick={clickHandler}
-          role="gridcell"
-          className={classnames(classNameMap)}
-        >
-          <a
-            className={`${prefixCls}-decade`}
+        return (
+          <td
+            key={dStartDecade}
+            onClick={clickHandler}
+            role="gridcell"
+            className={classnames(classNameMap)}
           >
-            {content}
-          </a>
-        </td>);
+            <a className={`${prefixCls}-decade`}>{content}</a>
+          </td>
+        );
       });
-      return (<tr key={decadeIndex} role="row">{tds}</tr>);
+      return (
+        <tr key={decadeIndex} role="row">
+          {tds}
+        </tr>
+      );
     });
 
     return (
@@ -118,17 +121,13 @@ export default class DecadePanel extends React.Component {
         </div>
         <div className={`${prefixCls}-body`}>
           <table className={`${prefixCls}-table`} cellSpacing="0" role="grid">
-            <tbody className={`${prefixCls}-tbody`}>
-              {decadesEls}
-            </tbody>
+            <tbody className={`${prefixCls}-tbody`}>{decadesEls}</tbody>
           </table>
         </div>
 
-        {footer && (
-          <div className={`${prefixCls}-footer`}>
-            {footer}
-          </div>)}
-      </div>);
+        {footer && <div className={`${prefixCls}-footer`}>{footer}</div>}
+      </div>
+    );
   }
 }
 
@@ -141,6 +140,5 @@ DecadePanel.propTypes = {
 };
 
 DecadePanel.defaultProps = {
-  onSelect() {
-  },
+  onSelect() {},
 };

@@ -35,6 +35,7 @@
     "globals": "^16.0.0",
     "less": "^4.3.0",
     "mockdate": "^2.0.1",
+    "prettier": "^3.5.3",
     "rc-dialog": "^7.0.0",
     "rc-select": "^9.1.5",
     "rc-time-picker": "^3.1.0",
@@ -43,6 +44,9 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.0",
     "vite": "^6.3.5"
+  },
+  "prettier": {
+    "singleQuote": true
   },
   "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
 }

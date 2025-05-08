@@ -12,16 +12,14 @@ function beforeCurrentMonthYear(current, today) {
   if (current.year() < today.year()) {
     return 1;
   }
-  return current.year() === today.year() &&
-    current.month() < today.month();
+  return current.year() === today.year() && current.month() < today.month();
 }
 
 function afterCurrentMonthYear(current, today) {
   if (current.year() > today.year()) {
     return 1;
   }
-  return current.year() === today.year() &&
-    current.month() > today.month();
+  return current.year() === today.year() && current.month() > today.month();
 }
 
 function getIdFromDate(date) {
@@ -34,21 +32,29 @@ export default class DateTBody extends React.Component {
     dateRender: PropTypes.func,
     disabledDate: PropTypes.func,
     prefixCls: PropTypes.string,
-    selectedValue: PropTypes.oneOfType([PropTypes.object, PropTypes.arrayOf(PropTypes.object)]),
+    selectedValue: PropTypes.oneOfType([
+      PropTypes.object,
+      PropTypes.arrayOf(PropTypes.object),
+    ]),
     value: PropTypes.object,
     hoverValue: PropTypes.any,
     showWeekNumber: PropTypes.bool,
-  }
+  };
 
   static defaultProps = {
     hoverValue: [],
-  }
+  };
 
   render() {
     const props = this.props;
     const {
-      contentRender, prefixCls, selectedValue, value,
-      showWeekNumber, dateRender, disabledDate,
+      contentRender,
+      prefixCls,
+      selectedValue,
+      value,
+      showWeekNumber,
+      dateRender,
+      disabledDate,
       hoverValue,
     } = props;
     let iIndex;
@@ -61,7 +67,7 @@ export default class DateTBody extends React.Component {
     const dateClass = `${prefixCls}-date`;
     const todayClass = `${prefixCls}-today`;
     const selectedClass = `${prefixCls}-selected-day`;
-    const selectedDateClass = `${prefixCls}-selected-date`;  // do not move with mouse operation
+    const selectedDateClass = `${prefixCls}-selected-date`; // do not move with mouse operation
     const selectedStartDateClass = `${prefixCls}-selected-start-date`;
     const selectedEndDateClass = `${prefixCls}-selected-end-date`;
     const inRangeClass = `${prefixCls}-in-range-cell`;
@@ -74,7 +80,8 @@ export default class DateTBody extends React.Component {
     const month1 = value.clone();
     month1.date(1);
     const day = month1.day();
-    const lastMonthDiffDay = (day + 7 - value.localeData().firstDayOfWeek()) % 7;
+    const lastMonthDiffDay =
+      (day + 7 - value.localeData().firstDayOfWeek()) % 7;
     // calculate last month
     const lastMonth1 = month1.clone();
     lastMonth1.add(0 - lastMonthDiffDay, 'days');
@@ -149,14 +156,20 @@ export default class DateTBody extends React.Component {
                 selected = true;
                 isActiveWeek = true;
                 cls += ` ${selectedEndDateClass}`;
-              } else if ((startValue === null || startValue === undefined) &&
-                current.isBefore(endValue, 'day')) {
+              } else if (
+                (startValue === null || startValue === undefined) &&
+                current.isBefore(endValue, 'day')
+              ) {
                 cls += ` ${inRangeClass}`;
-              } else if ((endValue === null || endValue === undefined) &&
-                current.isAfter(startValue, 'day')) {
+              } else if (
+                (endValue === null || endValue === undefined) &&
+                current.isAfter(startValue, 'day')
+              ) {
                 cls += ` ${inRangeClass}`;
-              } else if (current.isAfter(startValue, 'day') &&
-                current.isBefore(endValue, 'day')) {
+              } else if (
+                current.isAfter(startValue, 'day') &&
+                current.isBefore(endValue, 'day')
+              ) {
                 cls += ` ${inRangeClass}`;
               }
             }
@@ -209,7 +222,9 @@ export default class DateTBody extends React.Component {
         if (dateRender) {
           dateHtml = dateRender(current, value);
         } else {
-          const content = contentRender ? contentRender(current, value) : current.date();
+          const content = contentRender
+            ? contentRender(current, value)
+            : current.date();
           dateHtml = (
             <div
               key={getIdFromDate(current)}
@@ -218,25 +233,30 @@ export default class DateTBody extends React.Component {
               aria-disabled={disabled}
             >
               {content}
-            </div>);
+            </div>
+          );
         }
 
         dateCells.push(
           <td
             key={passed}
             onClick={disabled ? undefined : props.onSelect.bind(null, current)}
-            onMouseEnter={disabled ?
-              undefined : props.onDayHover && props.onDayHover.bind(null, current) || undefined}
+            onMouseEnter={
+              disabled
+                ? undefined
+                : (props.onDayHover && props.onDayHover.bind(null, current)) ||
+                  undefined
+            }
             role="gridcell"
             title={getTitleString(current)}
             className={cls}
           >
             {dateHtml}
-          </td>);
+          </td>,
+        );
 
         passed++;
       }
-
 
       tableHtml.push(
         <tr
@@ -249,10 +269,9 @@ export default class DateTBody extends React.Component {
         >
           {weekNumberCell}
           {dateCells}
-        </tr>);
+        </tr>,
+      );
     }
-    return (<tbody className={`${prefixCls}-tbody`}>
-      {tableHtml}
-    </tbody>);
+    return <tbody className={`${prefixCls}-tbody`}>{tableHtml}</tbody>;
   }
 }

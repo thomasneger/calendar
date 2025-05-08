@@ -54,7 +54,7 @@ class Demo extends React.Component {
   static propTypes = {
     defaultValue: PropTypes.object,
     defaultCalendarValue: PropTypes.object,
-  }
+  };
 
   state = {
     value: undefined,
@@ -62,33 +62,33 @@ class Demo extends React.Component {
   };
 
   onChange = (value) => {
-    console.log('DatePicker change: ', (value && value.format(format)));
+    console.log('DatePicker change: ', value && value.format(format));
     this.setState({
       value,
     });
-  }
+  };
 
   onOpenChange = (open) => {
     this.setState({
       open,
     });
-  }
+  };
 
   dateRender = (current) => {
     const selectedValue = this.state.value;
-    if (selectedValue && current.year() === selectedValue.year() &&
-      current.week() === selectedValue.week()) {
-      return (<div className="rc-calendar-selected-day">
-        <div className="rc-calendar-date">
-          {current.date()}
+    if (
+      selectedValue &&
+      current.year() === selectedValue.year() &&
+      current.week() === selectedValue.week()
+    ) {
+      return (
+        <div className="rc-calendar-selected-day">
+          <div className="rc-calendar-date">{current.date()}</div>
         </div>
-      </div>);
+      );
     }
-    return (
-      <div className="rc-calendar-date">
-        {current.date()}
-      </div>);
-  }
+    return <div className="rc-calendar-date">{current.date()}</div>;
+  };
 
   lastWeek = () => {
     const value = this.state.value || now;
@@ -97,13 +97,16 @@ class Demo extends React.Component {
       value,
       open: false,
     });
-  }
+  };
 
   renderSidebar() {
     return (
       <div className="week-calendar-sidebar" key="sidebar">
-        <button onClick={this.lastWeek} style={{ margin: 20 }}>上一周</button>
-      </div>);
+        <button onClick={this.lastWeek} style={{ margin: 20 }}>
+          上一周
+        </button>
+      </div>
+    );
   }
 
   render() {
@@ -120,57 +123,62 @@ class Demo extends React.Component {
         dateInputPlaceholder="please input"
         defaultValue={now}
         showDateInput
-      />);
-    return (<div style={{ width: 400, margin: 20 }}>
-      <div style={{
-        boxSizing: 'border-box',
-        position: 'relative',
-        display: 'block',
-        lineHeight: 1.5,
-        marginBottom: 22,
-      }}
-      >
-        <DatePicker
-          onOpenChange={this.onOpenChange}
-          open={this.state.open}
-          animation="slide-up"
-          calendar={calendar}
-          value={state.value}
-          onChange={this.onChange}
+      />
+    );
+    return (
+      <div style={{ width: 400, margin: 20 }}>
+        <div
+          style={{
+            boxSizing: 'border-box',
+            position: 'relative',
+            display: 'block',
+            lineHeight: 1.5,
+            marginBottom: 22,
+          }}
         >
-          {
-            ({ value }) => {
+          <DatePicker
+            onOpenChange={this.onOpenChange}
+            open={this.state.open}
+            animation="slide-up"
+            calendar={calendar}
+            value={state.value}
+            onChange={this.onChange}
+          >
+            {({ value }) => {
               return (
                 <span tabIndex="0">
-                <input
-                  placeholder="please select week"
-                  style={{ width: 250 }}
-                  disabled={state.disabled}
-                  readOnly
-                  tabIndex="-1"
-                  className="ant-calendar-picker-input ant-input"
-                  value={value && value.format(format) || ''}
-                />
+                  <input
+                    placeholder="please select week"
+                    style={{ width: 250 }}
+                    disabled={state.disabled}
+                    readOnly
+                    tabIndex="-1"
+                    className="ant-calendar-picker-input ant-input"
+                    value={(value && value.format(format)) || ''}
+                  />
                 </span>
               );
-            }
-          }
-        </DatePicker>
+            }}
+          </DatePicker>
+        </div>
       </div>
-    </div>);
+    );
   }
 }
 
-ReactDOM.render((<div
-  style={{
-    zIndex: 1000,
-    position: 'relative',
-    width: 900,
-    margin: '20px auto',
-  }}
->
-  <style dangerouslySetInnerHTML={{ __html: style }} />
-  <div>
-    <Demo />
-  </div>
-</div>), document.getElementById('__react-content'));
+ReactDOM.render(
+  <div
+    style={{
+      zIndex: 1000,
+      position: 'relative',
+      width: 900,
+      margin: '20px auto',
+    }}
+  >
+    <style dangerouslySetInnerHTML={{ __html: style }} />
+    <div>
+      <Demo />
+    </div>
+  </div>,
+  document.getElementById('__react-content'),
+);
