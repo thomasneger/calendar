@@ -1,6 +1,12 @@
-import moment from 'moment';
+import moment, { type Moment } from 'moment';
 
-const defaultDisabledTime = {
+type DisabledTimeConfig = {
+  disabledHours: () => number[];
+  disabledMinutes: (hour: number) => number[];
+  disabledSeconds: (hour: number, minute: number) => number[];
+};
+
+const defaultDisabledTime: DisabledTimeConfig = {
   disabledHours() {
     return [];
   },
@@ -12,28 +18,28 @@ const defaultDisabledTime = {
   },
 };
 
-export function getTodayTime(value) {
+export function getTodayTime(value: Moment) {
   const today = moment();
   today.locale(value.locale()).utcOffset(value.utcOffset());
   return today;
 }
 
-export function getTitleString(value) {
+export function getTitleString(value: Moment) {
   return value.format('LL');
 }
 
-export function getTodayTimeStr(value) {
+export function getTodayTimeStr(value: Moment) {
   const today = getTodayTime(value);
   return getTitleString(today);
 }
 
-export function getMonthName(month) {
+export function getMonthName(month: Moment) {
   const locale = month.locale();
   const localeData = month.localeData();
   return localeData[locale === 'zh-cn' ? 'months' : 'monthsShort'](month);
 }
 
-export function syncTime(from, to) {
+export function syncTime(from: Moment, to: Moment) {
   if (!moment.isMoment(from) || !moment.isMoment(to)) return;
   to.hour(from.hour());
   to.minute(from.minute());
@@ -41,16 +47,24 @@ export function syncTime(from, to) {
   to.millisecond(from.millisecond());
 }
 
-export function getTimeConfig(value, disabledTime) {
+export function getTimeConfig(
+  value: Moment | null | undefined,
+  disabledTime: (value: Moment | null | undefined) => boolean,
+) {
   let disabledTimeConfig = disabledTime ? disabledTime(value) : {};
   disabledTimeConfig = {
     ...defaultDisabledTime,
     ...disabledTimeConfig,
   };
-  return disabledTimeConfig;
+
+  // TODO Check, this could also be a boolean I think
+  return disabledTimeConfig as DisabledTimeConfig;
 }
 
-export function isTimeValidByConfig(value, disabledTimeConfig) {
+export function isTimeValidByConfig(
+  value: Moment | null | undefined,
+  disabledTimeConfig: DisabledTimeConfig,
+) {
   let invalidTime = false;
   if (value) {
     const hour = value.hour();
@@ -75,12 +89,19 @@ export function isTimeValidByConfig(value, disabledTimeConfig) {
   return !invalidTime;
 }
 
-export function isTimeValid(value, disabledTime) {
+export function isTimeValid(
+  value: Moment | null | undefined,
+  disabledTime: (value: Moment | null | undefined) => boolean,
+) {
   const disabledTimeConfig = getTimeConfig(value, disabledTime);
   return isTimeValidByConfig(value, disabledTimeConfig);
 }
 
-export function isAllowedDate(value, disabledDate, disabledTime) {
+export function isAllowedDate(
+  value: Moment | null | undefined,
+  disabledDate?: (value: Moment | null | undefined) => boolean,
+  disabledTime?: (value: Moment | null | undefined) => boolean,
+) {
   if (disabledDate) {
     if (disabledDate(value)) {
       return false;
@@ -94,7 +115,10 @@ export function isAllowedDate(value, disabledDate, disabledTime) {
   return true;
 }
 
-export function formatDate(value, format) {
+export function formatDate(
+  value: Moment | null | undefined,
+  format: string | string[],
+) {
   if (!value) {
     return '';
   }

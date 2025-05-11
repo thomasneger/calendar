@@ -1,5 +1,13 @@
-import React from 'react';
 import classnames from 'classnames';
+
+type Props = {
+  prefixCls: string;
+  locale?: any;
+  showTimePicker?: boolean;
+  onOpenTimePicker?: () => void;
+  onCloseTimePicker?: () => void;
+  timePickerDisabled?: boolean;
+};
 
 export default function TimePickerButton({
   prefixCls,
@@ -8,17 +16,20 @@ export default function TimePickerButton({
   onOpenTimePicker,
   onCloseTimePicker,
   timePickerDisabled,
-}) {
+}: Props) {
   const className = classnames({
     [`${prefixCls}-time-picker-btn`]: true,
     [`${prefixCls}-time-picker-btn-disabled`]: timePickerDisabled,
   });
-  let onClick = null;
-  if (!timePickerDisabled) {
-    onClick = showTimePicker ? onCloseTimePicker : onOpenTimePicker;
-  }
+
+  const onClick = showTimePicker ? onCloseTimePicker : onOpenTimePicker;
+
   return (
-    <a className={className} role="button" onClick={onClick}>
+    <a
+      className={className}
+      role="button"
+      onClick={timePickerDisabled ? undefined : onClick}
+    >
       {showTimePicker ? locale.dateSelect : locale.timeSelect}
     </a>
   );
