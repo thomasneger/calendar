@@ -1,4 +1,4 @@
-import type { Moment } from 'moment';
+import type { Moment, MomentInput } from 'moment';
 
 export function goStartMonth(time: Moment) {
   return time.clone().startOf('month');
@@ -24,7 +24,7 @@ export function goTime(time: Moment, direction: number, unit: Unit) {
 // TODO These typings were guessed - figure with RangeCalendar
 export function includesTime(
   timeList: Moment[] = [],
-  time: string,
+  time: MomentInput,
   unit: 'month',
 ) {
   return timeList.some((t) => t.isSame(time, unit));

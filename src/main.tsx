@@ -7,6 +7,7 @@ import 'rc-time-picker/assets/index.css';
 
 import TimePickerPanel from 'rc-time-picker/lib/Panel';
 import moment from 'moment';
+import RangeCalendar from './RangeCalendar';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -49,6 +50,8 @@ function Example() {
         onPanelChange={(_, panel) => setMode(panel)}
         onChange={(v) => setInput(v.format('MM/DD/YYYY HH:mm:ss'))}
       />
+
+      <RangeCalendar />
     </div>
   );
 }

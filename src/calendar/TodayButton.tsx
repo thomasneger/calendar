@@ -4,7 +4,7 @@ type Props = {
   prefixCls: string;
   locale?: any;
   value: any;
-  timePicker: any;
+  timePicker?: any;
   disabled?: boolean;
   disabledDate?: (date: any) => boolean;
   onToday?: () => void;

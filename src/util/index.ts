@@ -1,7 +1,8 @@
 import moment, { type Moment } from 'moment';
 
+// TODO Extract
 type DisabledTimeConfig = {
-  disabledHours: () => number[];
+  disabledHours: (hours: number) => number[];
   disabledMinutes: (hour: number) => number[];
   disabledSeconds: (hour: number, minute: number) => number[];
 };
@@ -39,7 +40,7 @@ export function getMonthName(month: Moment) {
   return localeData[locale === 'zh-cn' ? 'months' : 'monthsShort'](month);
 }
 
-export function syncTime(from: Moment, to: Moment) {
+export function syncTime(from: Moment | undefined, to: Moment | undefined) {
   if (!moment.isMoment(from) || !moment.isMoment(to)) return;
   to.hour(from.hour());
   to.minute(from.minute());

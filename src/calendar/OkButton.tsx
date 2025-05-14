@@ -1,7 +1,7 @@
 interface Props {
   prefixCls: string;
   locale?: any;
-  okDisabled?: boolean;
+  okDisabled?: boolean | number;
   onOk?: () => void;
 }
 

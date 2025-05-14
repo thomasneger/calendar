@@ -6,7 +6,7 @@ type Props = {
   showTimePicker?: boolean;
   onOpenTimePicker?: () => void;
   onCloseTimePicker?: () => void;
-  timePickerDisabled?: boolean;
+  timePickerDisabled?: boolean | number;
 };
 
 export default function TimePickerButton({
