@@ -14,7 +14,8 @@
   ],
   "scripts": {
     "dev": "vite",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "check": "tsc -b --noEmit"
   },
   "dependencies": {
     "classnames": "^2.5.1",
