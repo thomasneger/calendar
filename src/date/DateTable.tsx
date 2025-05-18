@@ -6,8 +6,10 @@ import type { Moment } from 'moment';
 interface Props {
   prefixCls: string;
   onSelect: (current: Moment) => void;
-  selectedValue: Moment | null | undefined;
+  selectedValue: Moment | Moment[] | null | undefined;
   value: Moment;
+  hoverValue?: Moment[];
+  onDayHover?: (value: Moment) => void;
   showWeekNumber?: boolean;
   dateRender?: (current: Moment, value: Moment) => React.ReactNode;
   disabledDate?: (current: Moment, value: Moment) => boolean;

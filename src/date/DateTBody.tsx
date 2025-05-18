@@ -4,7 +4,8 @@ import DateConstants from './DateConstants';
 import { getTitleString, getTodayTime } from '../util/';
 import type { Moment } from 'moment';
 
-function isSameDay(one: Moment, two: Moment | null | undefined) {
+function isSameDay(one: Moment, two: Moment | Moment[] | null | undefined) {
+  // @ts-expect-error somehow isSame deals with an array of Moment[]
   return one && two && one.isSame(two, 'day');
 }
 
@@ -31,7 +32,7 @@ interface Props {
   contentRender?: (current: Moment, value: Moment) => React.ReactNode;
   dateRender?: (current: Moment, value: Moment) => React.ReactNode;
   disabledDate?: (current: Moment, value: Moment) => boolean;
-  selectedValue: Moment | null | undefined;
+  selectedValue: Moment | Moment[] | null | undefined;
   value: Moment;
   hoverValue?: Array<Moment>;
   showWeekNumber?: boolean;

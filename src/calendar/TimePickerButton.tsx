@@ -1,8 +1,9 @@
 import classnames from 'classnames';
+import type { Locale } from '../types';
 
 type Props = {
   prefixCls: string;
-  locale?: any;
+  locale: Locale;
   showTimePicker?: boolean;
   onOpenTimePicker?: () => void;
   onCloseTimePicker?: () => void;

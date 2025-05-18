@@ -1,11 +1,12 @@
 import moment, { type Moment } from 'moment';
+import type { DisabledTimeConfig } from '../types';
 
-// TODO Extract
-type DisabledTimeConfig = {
-  disabledHours: (hours: number) => number[];
-  disabledMinutes: (hour: number) => number[];
-  disabledSeconds: (hour: number, minute: number) => number[];
-};
+type Value = (Moment | null | undefined) | Moment[];
+
+type DisabledTimeFn<T extends Value> = (
+  date: T,
+  type?: string,
+) => DisabledTimeConfig;
 
 const defaultDisabledTime: DisabledTimeConfig = {
   disabledHours() {
@@ -48,22 +49,20 @@ export function syncTime(from: Moment | undefined, to: Moment | undefined) {
   to.millisecond(from.millisecond());
 }
 
-export function getTimeConfig(
-  value: Moment | null | undefined,
-  disabledTime: (value: Moment | null | undefined) => boolean,
-) {
-  let disabledTimeConfig = disabledTime ? disabledTime(value) : {};
-  disabledTimeConfig = {
+export function getTimeConfig<T extends Value>(
+  value: T,
+  disabledTime: DisabledTimeFn<T>,
+): DisabledTimeConfig {
+  const disabledTimeConfig = disabledTime ? disabledTime(value) : {};
+
+  return {
     ...defaultDisabledTime,
     ...disabledTimeConfig,
   };
-
-  // TODO Check, this could also be a boolean I think
-  return disabledTimeConfig as DisabledTimeConfig;
 }
 
 export function isTimeValidByConfig(
-  value: Moment | null | undefined,
+  value: Moment,
   disabledTimeConfig: DisabledTimeConfig,
 ) {
   let invalidTime = false;
@@ -91,17 +90,18 @@ export function isTimeValidByConfig(
 }
 
 export function isTimeValid(
-  value: Moment | null | undefined,
-  disabledTime: (value: Moment | null | undefined) => boolean,
+  value: Moment,
+  disabledTime: DisabledTimeFn<Moment>,
 ) {
-  const disabledTimeConfig = getTimeConfig(value, disabledTime);
+  const disabledTimeConfig = getTimeConfig<Moment>(value, disabledTime);
+
   return isTimeValidByConfig(value, disabledTimeConfig);
 }
 
 export function isAllowedDate(
-  value: Moment | null | undefined,
-  disabledDate?: (value: Moment | null | undefined) => boolean,
-  disabledTime?: (value: Moment | null | undefined) => boolean,
+  value: Moment,
+  disabledDate?: (value: Moment) => boolean,
+  disabledTime?: DisabledTimeFn<Moment>,
 ) {
   if (disabledDate) {
     if (disabledDate(value)) {

@@ -1,11 +1,13 @@
 import { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import Calendar, { type CalendarProps } from './Calendar';
+
+// @ts-expect-error importing css
 import '../assets/index.less';
 
+// @ts-expect-error importing css
 import 'rc-time-picker/assets/index.css';
 
-import TimePickerPanel from 'rc-time-picker/lib/Panel';
 import moment from 'moment';
 import RangeCalendar from './RangeCalendar';
 
@@ -42,8 +44,13 @@ function Example() {
         showDateInput
         showOk
         showToday
-        timePicker={<TimePickerPanel />}
-        disabledTime={() => true}
+        disabledDate={(curr, selected) => {
+          if (curr.isSame(selected, 'week')) {
+            return true;
+          }
+
+          return false;
+        }}
         selectedValue={value}
         value={value}
         mode={mode}

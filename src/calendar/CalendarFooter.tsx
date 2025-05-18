@@ -1,27 +1,26 @@
-import React from 'react';
+import React, { type ReactElement } from 'react';
 import cx from 'classnames';
 import TodayButton from './TodayButton';
 import OkButton from './OkButton';
 import TimePickerButton from './TimePickerButton';
-
-// TODO Extract
-type Mode = 'time' | 'date' | 'month' | 'year' | 'decade';
+import type { Moment } from 'moment';
+import type { DisabledTimeFn, Locale, Mode } from '../types';
 
 interface Props {
   prefixCls: string;
-  value: any;
+  value: Moment;
   showToday: boolean;
-  timePicker: any;
+  timePicker: ReactElement | null;
   renderFooter?: (mode: Mode | null) => React.ReactNode;
   mode: Mode | null;
   showOk?: boolean;
-  onSelect: (value: any) => void;
-  locale?: any;
-  disabledDate?: (date: any) => boolean;
-  disabledTime?: (date: any) => boolean;
+  onSelect: (value: Moment) => void;
+  locale: Locale;
+  disabledDate?: (date: Moment) => boolean;
+  disabledTime?: DisabledTimeFn;
   showTimePicker?: boolean;
   showDateInput?: boolean;
-  selectedValue?: any;
+  selectedValue?: Moment | null;
   timePickerDisabled?: boolean;
   okDisabled?: boolean;
   onOk?: () => void;
@@ -55,7 +54,7 @@ export default function CalendarFooter(props: Props) {
       okBtn = <OkButton {...props} />;
     }
     let timePickerBtn;
-    if (!!props.timePicker) {
+    if (props.timePicker) {
       timePickerBtn = <TimePickerButton {...props} />;
     }
 

@@ -1,48 +1,51 @@
-import React, { type ReactNode } from 'react';
+import React, {
+  type HTMLAttributes,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
 import CalendarHeader from '../calendar/CalendarHeader';
 import DateTable from '../date/DateTable';
 import DateInput from '../date/DateInput';
 import { getTimeConfig } from '../util/index';
 import type { Moment } from 'moment';
+import type {
+  DisabledTimeConfig,
+  Locale,
+  Mode,
+  TimePickerRangeProps,
+} from '../types';
 
-// TODO Extract
-type Mode = 'time' | 'date' | 'month' | 'year' | 'decade';
-type DisabledTimeFn = (date: Moment[], type: string) => DisabledTimeConfig;
-type DisabledTimeConfig = {
-  disabledHours: (hours: number) => number[];
-  disabledMinutes: (hour: number) => number[];
-  disabledSeconds: (hour: number, minute: number) => number[];
-};
+type DisabledTimeFn = (date: Moment[], type?: string) => DisabledTimeConfig;
 
 interface CalendarPartProps {
   prefixCls: string;
-  value?: Moment;
+  value: Moment;
   hoverValue: Moment[];
   selectedValue: Moment[];
   direction: 'left' | 'right';
-  locale: any;
+  locale: Locale;
   showDateInput: boolean;
   showTimePicker: boolean;
-  format: string;
+  format: string | string[];
   placeholder?: string;
-  disabledDate: (date: Moment) => boolean;
-  timePicker: ReactNode;
+  disabledDate?: (date: Moment) => boolean;
+  timePicker?: ReactElement<TimePickerRangeProps>;
   disabledTime: DisabledTimeFn;
-  timePickerDisabledTime: object;
-  onInputChange: (value: Moment) => void;
+  timePickerDisabledTime?: object;
+  onInputChange: (value: Moment | null) => void;
   onInputSelect: (value: Moment) => void;
   enableNext?: boolean;
   enablePrev?: boolean;
   clearIcon: ReactNode;
-  dateRender: (date: Moment) => ReactNode;
-  inputMode: string;
-  showClear: boolean;
+  dateRender?: (date: Moment) => ReactNode;
+  inputMode?: HTMLAttributes<HTMLInputElement>['inputMode'];
+  showClear?: boolean;
   onValueChange: (value: Moment) => void;
-  onPanelChange: (value: Moment, mode: Mode) => void;
+  onPanelChange: (value: Moment | null, mode: Mode) => void;
   disabledMonth: (date: Moment) => boolean;
   onSelect: (value: Moment) => void;
-  onDayHover: (value: Moment) => void;
-  showWeekNumber: boolean;
+  onDayHover?: (value: Moment) => void;
+  showWeekNumber?: boolean;
   mode: Mode;
 }
 
@@ -70,6 +73,7 @@ export default function CalendarPart(props: CalendarPartProps) {
     showClear,
     inputMode,
   } = props;
+
   const shouldShowTimePicker = showTimePicker && timePicker;
   const disabledTimeConfig =
     shouldShowTimePicker && disabledTime
@@ -102,10 +106,8 @@ export default function CalendarPart(props: CalendarPartProps) {
       format={format}
       locale={locale}
       prefixCls={prefixCls}
-      timePicker={timePicker}
       disabledDate={disabledDate}
       placeholder={placeholder}
-      disabledTime={disabledTime}
       value={value}
       showClear={showClear || false}
       selectedValue={selectedValue[index]}

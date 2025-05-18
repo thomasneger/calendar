@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import classnames from 'classnames';
 import type { Moment } from 'moment';
+import type { Locale } from '../types';
 
 const ROW = 4;
 const COL = 3;
 
 interface Props {
-  locale: any;
+  locale: Locale;
   value?: Moment;
   defaultValue: Moment;
   rootPrefixCls: string;
   renderFooter?: (mode: string) => React.ReactNode;
-  onSelect: (value: any) => void;
+  onSelect: (value: Moment) => void;
 }
 
 export default function DecadePanel(props: Props) {

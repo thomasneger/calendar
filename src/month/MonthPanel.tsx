@@ -1,20 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import MonthTable from './MonthTable';
 import type { Moment } from 'moment';
+import type { Locale } from '../types';
 
 interface Props {
-  disabledDate?: (date: any) => boolean;
-  onSelect: (date: any) => void;
-  renderFooter?: (mode: string) => React.ReactNode;
+  disabledDate?: (date: Moment) => boolean;
+  onSelect: (date: Moment) => void;
+  renderFooter?: (mode: string) => ReactNode;
   rootPrefixCls: string;
   value: Moment;
   defaultValue?: Moment;
   changeYear: (direction: number) => void;
-  locale: any;
-  style?: React.CSSProperties;
+  locale: Locale;
+  style?: CSSProperties;
   onYearPanelShow: () => void;
-  cellRender?: (date: any) => React.ReactNode;
-  contentRender?: (date: any) => React.ReactNode;
+  cellRender?: (date: Moment) => React.ReactNode;
+  contentRender?: (date: Moment) => React.ReactNode;
 }
 
 export default function MonthPanel(props: Props) {

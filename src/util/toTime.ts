@@ -21,7 +21,6 @@ export function goTime(time: Moment, direction: number, unit: Unit) {
   return time.clone().add(direction, unit);
 }
 
-// TODO These typings were guessed - figure with RangeCalendar
 export function includesTime(
   timeList: Moment[] = [],
   time: MomentInput,

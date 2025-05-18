@@ -1,8 +1,9 @@
-import React, {
+import {
+  useEffect,
   useRef,
   useState,
   type KeyboardEventHandler,
-  type ReactNode,
+  type ReactElement,
 } from 'react';
 import moment, { type Moment } from 'moment';
 import classnames from 'classnames';
@@ -14,12 +15,19 @@ import TimePickerButton from './calendar/TimePickerButton';
 import { syncTime, getTodayTime, isAllowedDate } from './util';
 import { goTime, goStartMonth, goEndMonth, includesTime } from './util/toTime';
 import en_US from './locale/en_US';
+import type {
+  Cause,
+  DisabledTimeConfig,
+  Mode,
+  TimePickerRangeProps,
+} from './types';
+import { useGetFormat } from './util/format';
 
 function isEmptyArray(arr: unknown[]) {
   return Array.isArray(arr) && (arr.length === 0 || arr.every((i) => !i));
 }
 
-function isArraysEqual(a: [], b: []) {
+function isArraysEqual(a: unknown[] | undefined, b: unknown[] | undefined) {
   if (a === b) return true;
   if (
     a === null ||
@@ -49,16 +57,19 @@ function getValueFromSelectedValue(selectedValue: Moment[]) {
   return [start, end];
 }
 
-function normalizeAnchor(props: ReturnType<typeof initProps>, init: 1) {
+function normalizeAnchor(props: ReturnType<typeof initProps>, init: 0 | 1) {
   const selectedValue =
     props.selectedValue || (init && props.defaultSelectedValue);
   const value = props.value || (init && props.defaultValue);
   const normalizedValue = value
     ? getValueFromSelectedValue(value)
-    : getValueFromSelectedValue(selectedValue);
+    : // @ts-expect-error while technically a bug, this occurs when we pass a props.value of empty array
+      getValueFromSelectedValue(selectedValue);
   return !isEmptyArray(normalizedValue)
     ? normalizedValue
-    : init && [moment(), moment().add(1, 'months')];
+    : init === 1
+      ? [moment(), moment().add(1, 'months')]
+      : [];
 }
 
 function generateOptions(length: number, extraOptionGen: () => number[]) {
@@ -71,15 +82,7 @@ function generateOptions(length: number, extraOptionGen: () => number[]) {
   return arr;
 }
 
-// TODO Extract
-type Mode = 'time' | 'date' | 'month' | 'year' | 'decade';
-type Cause = { source: string };
 type DisabledTimeFn = (date: Moment[], type: string) => DisabledTimeConfig;
-type DisabledTimeConfig = {
-  disabledHours: (hours: number) => number[];
-  disabledMinutes: (hour: number) => number[];
-  disabledSeconds: (hour: number, minute: number) => number[];
-};
 
 interface RangeCalendarProps {
   prefixCls?: string;
@@ -92,7 +95,7 @@ interface RangeCalendarProps {
   hoverValue?: Moment[];
   mode?: Mode[];
   showDateInput?: boolean;
-  timePicker?: ReactNode;
+  timePicker?: ReactElement<TimePickerRangeProps>;
   showOk?: boolean;
   showToday?: boolean;
   defaultSelectedValue?: Moment[];
@@ -109,7 +112,7 @@ interface RangeCalendarProps {
   onClear?: () => void;
   type?: string;
   disabledDate?: (date: Moment) => boolean;
-  disabledTime?: (date: Moment, direction: string) => boolean;
+  disabledTime?: DisabledTimeFn;
   renderFooter?: () => React.ReactNode;
   renderSidebar?: () => React.ReactNode;
   clearIcon?: React.ReactNode;
@@ -140,7 +143,13 @@ function initProps(props: RangeCalendarProps) {
     onValueChange: props.onValueChange || (() => {}),
     onHoverChange: props.onHoverChange || (() => {}),
     onPanelChange: props.onPanelChange || (() => {}),
-    disabledTime: props.disabledTime || (() => {}),
+    disabledTime:
+      props.disabledTime ||
+      (() => ({
+        disabledHours: () => [],
+        disabledMinutes: () => [],
+        disabledSeconds: () => [],
+      })),
     onInputSelect: props.onInputSelect || (() => {}),
     onOk: props.onOk || (() => {}),
     showToday: props.showToday || true,
@@ -227,7 +236,7 @@ export default function RangeCalendar(rawProps: RangeCalendarProps) {
 
   const onInputSelect = (
     direction: 'left' | 'right',
-    value: Moment,
+    value: Moment | null,
     cause?: Cause,
   ) => {
     if (!value) {
@@ -239,6 +248,7 @@ export default function RangeCalendar(rawProps: RangeCalendarProps) {
     selectedValue[index] = value;
 
     if (selectedValue[0] && compare(selectedValue[0], selectedValue[1]) > 0) {
+      // @ts-expect-error The typing of the various values should technically be [(Moment | undefined), (Moment | undefined)]
       selectedValue[1 - index] = state.showTimePicker
         ? selectedValue[index]
         : undefined;
@@ -436,11 +446,11 @@ export default function RangeCalendar(rawProps: RangeCalendarProps) {
     }
   };
 
-  const onStartInputChange = (input: Moment) => {
+  const onStartInputChange = (input: Moment | null) => {
     return onInputSelect('left', input);
   };
 
-  const onEndInputChange = (input: Moment) => {
+  const onEndInputChange = (input: Moment | null) => {
     return onInputSelect('right', input);
   };
 
@@ -464,7 +474,7 @@ export default function RangeCalendar(rawProps: RangeCalendarProps) {
     return fireValueChange(value);
   };
 
-  const onStartPanelChange = (value: Moment, mode: Mode) => {
+  const onStartPanelChange = (value: Moment | null, mode: Mode) => {
     const newMode = [mode, state.mode[1]];
     const newState: Partial<State> = {
       panelTriggerSource: 'start',
@@ -477,7 +487,7 @@ export default function RangeCalendar(rawProps: RangeCalendarProps) {
     props.onPanelChange(newValue, newMode);
   };
 
-  const onEndPanelChange = (value: Moment, mode: Mode) => {
+  const onEndPanelChange = (value: Moment | null, mode: Mode) => {
     const newMode = [state.mode[0], mode];
     const newState: Partial<State> = {
       panelTriggerSource: 'end',
@@ -490,27 +500,38 @@ export default function RangeCalendar(rawProps: RangeCalendarProps) {
     props.onPanelChange(newValue, newMode);
   };
 
-  // TODO Refactor with useEffect
-  // static getDerivedStateFromProps(nextProps, state) {
-  //   const newState = {};
-  //   if ('value' in nextProps) {
-  //     newState.value = normalizeAnchor(nextProps, 0);
-  //   }
-  //   if (
-  //     'hoverValue' in nextProps &&
-  //     !isArraysEqual(state.hoverValue, nextProps.hoverValue)
-  //   ) {
-  //     newState.hoverValue = nextProps.hoverValue;
-  //   }
-  //   if ('selectedValue' in nextProps) {
-  //     newState.selectedValue = nextProps.selectedValue;
-  //     newState.prevSelectedValue = nextProps.selectedValue;
-  //   }
-  //   if ('mode' in nextProps && !isArraysEqual(state.mode, nextProps.mode)) {
-  //     newState.mode = nextProps.mode;
-  //   }
-  //   return newState;
-  // }
+  useEffect(() => {
+    const newState: Partial<State> = {};
+    if ('value' in props) {
+      newState.value = normalizeAnchor(props, 0);
+    }
+    if ('hoverValue' in props) {
+      if (!isArraysEqual(state.hoverValue, props.hoverValue)) {
+        newState.hoverValue = props.hoverValue;
+      }
+    }
+    if ('selectedValue' in props) {
+      newState.selectedValue = props.selectedValue;
+      newState.prevSelectedValue = props.selectedValue;
+    }
+    if ('mode' in props && !isArraysEqual(state.mode, props.mode)) {
+      newState.mode = props.mode;
+    }
+
+    setState((prev) => ({
+      ...prev,
+      ...newState,
+    }));
+    // We can't pass the whole props otherwise it will cause infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    props.value,
+    props.hoverValue,
+    props.selectedValue,
+    props.mode,
+    state.mode,
+    state.hoverValue,
+  ]);
 
   const getStartValue = () => {
     const { selectedValue, showTimePicker, value, mode, panelTriggerSource } =
@@ -578,26 +599,26 @@ export default function RangeCalendar(rawProps: RangeCalendarProps) {
       const hours = startValue.hour();
       const minutes = startValue.minute();
       const second = startValue.second();
-      let { disabledHours, disabledMinutes, disabledSeconds } =
+      const { disabledHours, disabledMinutes, disabledSeconds } =
         userSettingDisabledTime;
       const oldDisabledMinutes = disabledMinutes ? disabledMinutes() : [];
       const olddisabledSeconds = disabledSeconds ? disabledSeconds() : [];
-      disabledHours = generateOptions(hours, disabledHours);
-      disabledMinutes = generateOptions(minutes, disabledMinutes);
-      disabledSeconds = generateOptions(second, disabledSeconds);
+      const disabledHoursArray = generateOptions(hours, disabledHours);
+      const disabledMinutesArray = generateOptions(minutes, disabledMinutes);
+      const disabledSecondsArray = generateOptions(second, disabledSeconds);
       return {
         disabledHours() {
-          return disabledHours;
+          return disabledHoursArray;
         },
         disabledMinutes(hour: number) {
           if (hour === hours) {
-            return disabledMinutes;
+            return disabledMinutesArray;
           }
           return oldDisabledMinutes;
         },
         disabledSeconds(hour: number, minute: number) {
           if (hour === hours && minute === minutes) {
-            return disabledSeconds;
+            return disabledSecondsArray;
           }
           return olddisabledSeconds;
         },
@@ -608,7 +629,11 @@ export default function RangeCalendar(rawProps: RangeCalendarProps) {
 
   const isAllowedDateAndTime = (selectedValue: Moment[]) => {
     return (
+      // @ts-expect-error There is a bug in case "showOk" is true, it will indeed call props.disabledTime
+      // with a moment object, which is incorrect, it should be an array of moment objects
       isAllowedDate(selectedValue[0], props.disabledDate, disabledStartTime) &&
+      // @ts-expect-error There is a bug in case "showOk" is true, it will indeed call props.disabledTime
+      // with a moment object, which is incorrect, it should be an array of moment objects
       isAllowedDate(selectedValue[1], props.disabledDate, disabledEndTime)
     );
   };
@@ -631,7 +656,7 @@ export default function RangeCalendar(rawProps: RangeCalendarProps) {
 
   const fireSelectValueChange = (
     selectedValue: Moment[],
-    direct?: boolean,
+    direct?: boolean | null,
     cause?: Cause,
   ) => {
     const { timePicker } = props;
@@ -702,11 +727,11 @@ export default function RangeCalendar(rawProps: RangeCalendarProps) {
     props.onClear();
   };
 
-  const disabledStartTime = (time: Moment) => {
+  const disabledStartTime = (time: Moment[]) => {
     return props.disabledTime(time, 'start');
   };
 
-  const disabledEndTime = (time: Moment) => {
+  const disabledEndTime = (time: Moment[]) => {
     return props.disabledTime(time, 'end');
   };
 
@@ -897,19 +922,4 @@ export default function RangeCalendar(rawProps: RangeCalendarProps) {
       </div>
     </div>
   );
-}
-
-// TODO Extract
-function useGetFormat(props: ReturnType<typeof initProps>) {
-  const { locale, timePicker } = props;
-  let { format } = props;
-
-  if (!format) {
-    if (timePicker) {
-      format = locale.dateTimeFormat;
-    } else {
-      format = locale.dateFormat;
-    }
-  }
-  return format;
 }

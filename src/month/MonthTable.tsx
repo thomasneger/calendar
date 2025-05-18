@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import classnames from 'classnames';
 import { getTodayTime, getMonthName } from '../util/index';
 import type { Moment } from 'moment';
+import type { Locale } from '../types';
 
 const ROW = 4;
 const COL = 3;
@@ -9,11 +10,11 @@ const COL = 3;
 interface Props {
   onSelect: (date: Moment) => void;
   prefixCls: string;
-  value: any;
-  disabledDate?: (date: any) => boolean;
-  cellRender?: (date: any, locale: any) => React.ReactNode;
-  contentRender?: (date: any, locale: any) => React.ReactNode;
-  locale: any;
+  value: Moment;
+  disabledDate?: (date: Moment) => boolean;
+  cellRender?: (date: Moment, locale: Locale) => ReactNode;
+  contentRender?: (date: Moment, locale: Locale) => ReactNode;
+  locale: Locale;
 }
 
 export default function MonthTable(props: Props) {

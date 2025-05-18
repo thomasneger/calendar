@@ -1,12 +1,15 @@
+import type { Moment } from 'moment';
+import type { Locale } from '../types';
 import { getTodayTimeStr, getTodayTime, isAllowedDate } from '../util';
+import type { ReactElement } from 'react';
 
 type Props = {
   prefixCls: string;
-  locale?: any;
-  value: any;
-  timePicker?: any;
+  locale: Locale;
+  value: Moment;
+  timePicker?: ReactElement | null;
   disabled?: boolean;
-  disabledDate?: (date: any) => boolean;
+  disabledDate?: (date: Moment) => boolean;
   onToday?: () => void;
   text?: string;
 };

@@ -1,4 +1,5 @@
-import React, {
+import {
+  cloneElement,
   forwardRef,
   useEffect,
   useRef,
@@ -7,6 +8,7 @@ import React, {
   type FocusEventHandler,
   type HTMLAttributes,
   type KeyboardEventHandler,
+  type ReactElement,
   type ReactNode,
 } from 'react';
 import KeyCode from 'rc-util/lib/KeyCode';
@@ -18,8 +20,9 @@ import { getTimeConfig, getTodayTime, isAllowedDate, syncTime } from './util';
 import { goStartMonth, goEndMonth, goTime, type Unit } from './util/toTime';
 import moment, { type Moment } from 'moment';
 import enUs from './locale/en_US';
-import classnames from 'classnames';
 import classNames from 'classnames';
+import type { Cause, DisabledTimeFn, Mode } from './types';
+import { useGetFormat } from './util/format';
 
 const getMomentObjectIfValid = (date: Moment | undefined) => {
   if (moment.isMoment(date) && date.isValid()) {
@@ -28,12 +31,10 @@ const getMomentObjectIfValid = (date: Moment | undefined) => {
   return false;
 };
 
-type Mode = 'time' | 'date' | 'month' | 'year' | 'decade';
-
 export interface CalendarProps {
   prefixCls?: string;
   className?: string;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 
   /**
    * Controls the current date in the calendar picker only
@@ -47,30 +48,40 @@ export interface CalendarProps {
   defaultSelectedValue?: Moment;
   visible?: boolean;
   mode?: Mode;
-  locale?: any;
+  locale?: typeof enUs;
   showDateInput?: boolean;
   showWeekNumber?: boolean;
   showToday?: boolean;
   showOk?: boolean;
-  onSelect?: (value: Moment | null, cause: any) => void;
+  onSelect?: (value: Moment | null, cause?: Cause) => void;
   onOk?: (value: Moment | null | undefined) => void;
   onKeyDown?: KeyboardEventHandler<HTMLDivElement>;
-  timePicker?: React.ReactElement; // TODO Type as a TimePicker component
+  timePicker?: ReactElement<{
+    showHour?: boolean;
+    showMinute?: boolean;
+    showSecond?: boolean;
+    defaultOpenValue?: Moment;
+    value?: Moment | null;
+    onChange?: (value: Moment) => void;
+    disabledTime?: DisabledTimeFn;
+    defaultValue?: Moment;
+    disabled?: boolean;
+  }> | null;
   dateInputPlaceholder?: string;
   onClear?: () => void;
   onChange?: (value: Moment) => void;
   onPanelChange?: (value: Moment, mode: Mode) => void;
-  disabledDate?: (date: Moment | null | undefined) => boolean;
-  disabledTime?: any;
-  dateRender?: (current: Moment, today: Moment) => React.ReactNode;
-  renderFooter?: () => React.ReactNode;
-  renderSidebar?: () => React.ReactNode;
-  clearIcon?: React.ReactNode;
+  disabledDate?: (date: Moment, selected?: Moment) => boolean;
+  disabledTime?: DisabledTimeFn;
+  dateRender?: (current: Moment, today: Moment) => ReactNode;
+  renderFooter?: () => ReactNode;
+  renderSidebar?: () => ReactNode;
+  clearIcon?: ReactNode;
   focusablePanel?: boolean;
   inputMode?: HTMLAttributes<HTMLInputElement>['inputMode'];
   onBlur?: FocusEventHandler<HTMLDivElement>;
-  monthCellRender?: (current: Moment) => React.ReactNode;
-  monthCellContentRender?: (current: Moment) => React.ReactNode;
+  monthCellRender?: (current: Moment) => ReactNode;
+  monthCellContentRender?: (current: Moment) => ReactNode;
   format?: string | string[];
 }
 
@@ -125,6 +136,7 @@ function Calendar(props: CalendarProps) {
         getMomentObjectIfValid(props.defaultValue) ||
         getNowByCurrentStateValue(value),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.value, props.defaultValue]);
 
   // Update selectedValue when props.selectedValue
@@ -146,7 +158,6 @@ function Calendar(props: CalendarProps) {
     onPanelChange(updatedValue || value, mode);
   };
 
-  // TODO This is called in CalendarMixing and is attached to the root element (our parent)
   const handleOnKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
     if ((event.target as HTMLElement).nodeName.toLowerCase() === 'input') {
       return undefined;
@@ -218,10 +229,6 @@ function Calendar(props: CalendarProps) {
     handleSelectedValue(value, cause);
   };
 
-  type Cause = {
-    source: string;
-  };
-
   const handleSelectedValue = (
     updatedSelectedValue: Moment | null,
     cause?: Cause,
@@ -249,7 +256,7 @@ function Calendar(props: CalendarProps) {
     }
   };
 
-  const handleIsAllowedDate = (value: Moment | null | undefined) => {
+  const handleIsAllowedDate = (value: Moment) => {
     return isAllowedDate(value, disabledDate, disabledTime);
   };
 
@@ -261,7 +268,7 @@ function Calendar(props: CalendarProps) {
   };
 
   const handleOk = () => {
-    if (handleIsAllowedDate(selectedValue)) {
+    if (handleIsAllowedDate(selectedValue as Moment)) {
       onOk(selectedValue);
     }
   };
@@ -356,13 +363,14 @@ function Calendar(props: CalendarProps) {
       timePickerProps.defaultOpenValue = timePicker.props.defaultValue;
     }
 
-    timePickerEle = React.cloneElement(timePicker, timePickerProps);
+    timePickerEle = cloneElement(timePicker, timePickerProps);
   }
 
+  const preparedFormat = useGetFormat({ format, locale, timePicker });
   const dateInputElement = showDateInput ? (
     <DateInput
       ref={inputRef}
-      format={useGetFormat({ format, locale, timePicker })}
+      format={preparedFormat}
       key="date-input"
       value={value}
       locale={locale}
@@ -492,7 +500,7 @@ const Root = forwardRef<
   return (
     <div
       ref={ref}
-      className={classnames(className)}
+      className={classNames(className)}
       style={props.style}
       tabIndex={0}
       onKeyDown={props.onKeyDown}
@@ -502,19 +510,6 @@ const Root = forwardRef<
     </div>
   );
 });
-
-function useGetFormat(props: any) {
-  let { format, locale, timePicker } = props;
-
-  if (!format) {
-    if (timePicker) {
-      format = locale.dateTimeFormat;
-    } else {
-      format = locale.dateFormat;
-    }
-  }
-  return format;
-}
 
 function getNowByCurrentStateValue(value: Moment | null | undefined) {
   let ret;

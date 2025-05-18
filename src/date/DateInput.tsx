@@ -10,15 +10,16 @@ import {
 import KeyCode from 'rc-util/lib/KeyCode';
 import moment, { type Moment } from 'moment';
 import { formatDate } from '../util';
+import type en_US from '../locale/en_US';
 
 interface Props {
   prefixCls: string;
   value: Moment;
   format: string | string[];
-  locale: any;
+  locale: typeof en_US;
   disabledDate?: (date: Moment) => boolean;
   onChange: (date: Moment | null) => void;
-  onClear: () => void;
+  onClear?: () => void;
   placeholder?: string;
   onSelect: (date: Moment) => void;
   selectedValue: Moment | null | undefined;
@@ -35,7 +36,7 @@ const DateInput = forwardRef<HTMLInputElement, Props>((props, ref) => {
     format,
     locale,
     selectedValue,
-    onClear,
+    onClear = () => {},
     disabledDate,
     onChange,
     onSelect,

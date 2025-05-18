@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import classnames from 'classnames';
 import type { Moment } from 'moment';
+import type { Locale } from '../types';
+
 const ROW = 4;
 const COL = 3;
 
@@ -9,8 +11,8 @@ interface Props {
   value?: Moment;
   defaultValue: Moment;
   renderFooter?: (mode: string) => React.ReactNode;
-  onSelect: (value: any) => void;
-  locale: any;
+  onSelect: (value: Moment) => void;
+  locale: Locale;
   onDecadePanelShow: () => void;
 }
 

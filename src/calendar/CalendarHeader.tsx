@@ -3,24 +3,22 @@ import MonthPanel from '../month/MonthPanel';
 import YearPanel from '../year/YearPanel';
 import DecadePanel from '../decade/DecadePanel';
 import type { Moment } from 'moment';
-
-// TODO Extract
-type Mode = 'time' | 'date' | 'month' | 'year' | 'decade';
+import type { Locale, Mode } from '../types';
 
 interface Props {
   prefixCls: string;
-  value: any;
-  onValueChange: (value: any) => void;
+  value: Moment;
+  onValueChange: (value: Moment) => void;
   showTimePicker: boolean;
-  onPanelChange: (value: any, mode: Mode) => void;
-  locale: any;
-  enablePrev?: number;
-  enableNext?: number;
-  disabledMonth?: (date: any) => boolean;
+  onPanelChange: (value: Moment | null, mode: Mode) => void;
+  locale: Locale;
+  enablePrev?: boolean;
+  enableNext?: boolean;
+  disabledMonth?: (date: Moment) => boolean;
   renderFooter?: () => React.ReactNode;
-  onMonthSelect?: (value: any) => void;
-  monthCellRender?: (date: any) => React.ReactNode;
-  monthCellContentRender?: (date: any) => React.ReactNode;
+  onMonthSelect?: (value: Moment) => void;
+  monthCellRender?: (date: Moment) => React.ReactNode;
+  monthCellContentRender?: (date: Moment) => React.ReactNode;
   mode: Mode | null;
 }
 
@@ -103,7 +101,7 @@ export default function CalendarHeader(props: Props) {
         className={`${prefixCls}-year-select${timeClassName}`}
         role="button"
         onClick={showTimePicker ? undefined : () => showYearPanel('date')}
-        title={showTimePicker ? null : locale.yearSelect}
+        title={showTimePicker ? undefined : locale.yearSelect}
       >
         {value.format(locale.yearFormat)}
       </a>
@@ -113,7 +111,7 @@ export default function CalendarHeader(props: Props) {
         className={`${prefixCls}-month-select${timeClassName}`}
         role="button"
         onClick={showTimePicker ? undefined : showMonthPanel}
-        title={showTimePicker ? null : locale.monthSelect}
+        title={showTimePicker ? undefined : locale.monthSelect}
       >
         {locale.monthFormat
           ? value.format(locale.monthFormat)
