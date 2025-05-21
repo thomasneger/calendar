@@ -518,11 +518,11 @@ const RangeCalendar = forwardRef<R, P>((rawProps, forwardedRef) => {
         newState.hoverValue = props.hoverValue;
       }
     }
-    // TODO This triggers all the time, even when props were not passed. It resets the selectedValue to undefined
-    // if ('selectedValue' in props) {
-    //   newState.selectedValue = props.selectedValue;
-    //   newState.prevSelectedValue = props.selectedValue;
-    // }
+
+    if ('selectedValue' in rawProps && rawProps.selectedValue !== undefined) {
+      newState.selectedValue = props.selectedValue;
+      newState.prevSelectedValue = props.selectedValue;
+    }
     if ('mode' in props && !isArraysEqual(state.mode, props.mode)) {
       newState.mode = props.mode;
     }
@@ -536,7 +536,7 @@ const RangeCalendar = forwardRef<R, P>((rawProps, forwardedRef) => {
   }, [
     props.value,
     props.hoverValue,
-    props.selectedValue,
+    rawProps.selectedValue,
     props.mode,
     state.mode,
     state.hoverValue,
