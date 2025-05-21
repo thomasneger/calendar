@@ -1,5 +1,7 @@
 import {
+  forwardRef,
   useEffect,
+  useImperativeHandle,
   useRef,
   useState,
   type KeyboardEventHandler,
@@ -84,7 +86,7 @@ function generateOptions(length: number, extraOptionGen: () => number[]) {
 
 type DisabledTimeFn = (date: Moment[], type: string) => DisabledTimeConfig;
 
-interface RangeCalendarProps {
+export interface RangeCalendarProps {
   prefixCls?: string;
   className?: string;
   style?: React.CSSProperties;
@@ -171,7 +173,13 @@ type State = {
   panelTriggerSource: string;
 };
 
-export default function RangeCalendar(rawProps: RangeCalendarProps) {
+type R = {
+  focus: () => void;
+};
+
+type P = RangeCalendarProps;
+
+const RangeCalendar = forwardRef<R, P>((rawProps, forwardedRef) => {
   const props = initProps(rawProps);
 
   const selectedValueInit = props.selectedValue || props.defaultSelectedValue;
@@ -510,10 +518,11 @@ export default function RangeCalendar(rawProps: RangeCalendarProps) {
         newState.hoverValue = props.hoverValue;
       }
     }
-    if ('selectedValue' in props) {
-      newState.selectedValue = props.selectedValue;
-      newState.prevSelectedValue = props.selectedValue;
-    }
+    // TODO This triggers all the time, even when props were not passed. It resets the selectedValue to undefined
+    // if ('selectedValue' in props) {
+    //   newState.selectedValue = props.selectedValue;
+    //   newState.prevSelectedValue = props.selectedValue;
+    // }
     if ('mode' in props && !isArraysEqual(state.mode, props.mode)) {
       newState.mode = props.mode;
     }
@@ -814,6 +823,18 @@ export default function RangeCalendar(rawProps: RangeCalendarProps) {
 
   const rootRef = useRef<HTMLDivElement>(null);
 
+  useImperativeHandle(
+    forwardedRef,
+    () => ({
+      focus: () => {
+        if (rootRef.current) {
+          rootRef.current.focus();
+        }
+      },
+    }),
+    [],
+  );
+
   return (
     <div
       ref={rootRef}
@@ -922,4 +943,6 @@ export default function RangeCalendar(rawProps: RangeCalendarProps) {
       </div>
     </div>
   );
-}
+});
+
+export default RangeCalendar;

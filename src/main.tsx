@@ -8,7 +8,9 @@ import '../assets/index.less';
 // @ts-expect-error importing css
 import 'rc-time-picker/assets/index.css';
 
-import moment from 'moment';
+import Picker from './Picker';
+
+import moment, { type Moment } from 'moment';
 import RangeCalendar from './RangeCalendar';
 
 createRoot(document.getElementById('root')!).render(
@@ -59,6 +61,38 @@ function Example() {
       />
 
       <RangeCalendar />
+
+      <Picker
+        calendar={<RangeCalendar />}
+        value={[value, value.clone().add(2, 'day')]}
+      >
+        {({ ref, value }) => {
+          return (
+            <span>
+              <input
+                value={format(value)}
+                ref={ref}
+                placeholder="Pick a date"
+                style={{ width: 250 }}
+                disabled={false}
+                readOnly
+              />
+            </span>
+          );
+        }}
+      </Picker>
     </div>
   );
+}
+
+function format(value: Moment | Moment[] | null) {
+  if (!value) {
+    return '';
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((v) => v.format('YYYY-MM-DD HH:mm:ss')).join(' - ');
+  }
+
+  return value.format('YYYY-MM-DD HH:mm:ss');
 }

@@ -2,6 +2,7 @@ import {
   cloneElement,
   forwardRef,
   useEffect,
+  useImperativeHandle,
   useRef,
   useState,
   type CSSProperties,
@@ -85,7 +86,7 @@ export interface CalendarProps {
   format?: string | string[];
 }
 
-function Calendar(props: CalendarProps) {
+const Calendar = forwardRef((props: CalendarProps, forwardedRef) => {
   const {
     locale = enUs,
     style = {},
@@ -322,10 +323,17 @@ function Calendar(props: CalendarProps) {
     }, 0);
   };
 
-  // TODO This is probably called by other rc-* components
-  // getRootDOMNode = () => {
-  //   return ReactDOM.findDOMNode(this);
-  // };
+  useImperativeHandle(
+    forwardedRef,
+    () => ({
+      focus: () => {
+        if (rootRef.current) {
+          rootRef.current.focus();
+        }
+      },
+    }),
+    [],
+  );
 
   const openTimePicker = () => {
     handlePanelChange(null, 'time');
@@ -460,53 +468,20 @@ function Calendar(props: CalendarProps) {
   );
 
   return (
-    <Root
+    <div
       ref={rootRef}
-      prefixCls={prefixCls}
-      visible={visible}
       className={classNames({
+        [prefixCls]: 1,
+        [`${prefixCls}-hidden`]: !visible,
         [`${prefixCls}-week-number`]: showWeekNumber,
-        [className]: className,
+        [className]: !!className,
       })}
       style={style}
+      tabIndex={0}
       onKeyDown={handleOnKeyDown}
       onBlur={handleBlur}
     >
       {children}
-    </Root>
-  );
-}
-
-const Root = forwardRef<
-  HTMLDivElement,
-  {
-    prefixCls: string;
-    visible: boolean;
-    className: string;
-    style: CSSProperties;
-    onKeyDown: KeyboardEventHandler<HTMLElement>;
-    onBlur: FocusEventHandler<HTMLDivElement>;
-    children: ReactNode;
-  }
->((props, ref) => {
-  const prefixCls = props.prefixCls;
-
-  const className = {
-    [prefixCls]: 1,
-    [`${prefixCls}-hidden`]: !props.visible,
-    [props.className]: !!props.className,
-  };
-
-  return (
-    <div
-      ref={ref}
-      className={classNames(className)}
-      style={props.style}
-      tabIndex={0}
-      onKeyDown={props.onKeyDown}
-      onBlur={props.onBlur}
-    >
-      {props.children}
     </div>
   );
 });
