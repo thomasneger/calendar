@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Calendar, { type CalendarProps } from './Calendar';
 import Picker from './Picker';
 import RangeCalendar from './RangeCalendar';
+import MonthCalendar from './MonthCalendar';
 
 // @ts-expect-error importing css
 import '../assets/index.less';
@@ -71,6 +72,8 @@ export function Example() {
           );
         }}
       </Picker>
+
+      <MonthCalendar />
     </div>
   );
 }

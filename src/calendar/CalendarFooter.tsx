@@ -8,13 +8,13 @@ import type { DisabledTimeFn, Locale, Mode } from '../types';
 
 interface Props {
   prefixCls: string;
-  value: Moment;
-  showToday: boolean;
-  timePicker: ReactElement | null;
-  renderFooter?: (mode: Mode | null) => React.ReactNode;
-  mode: Mode | null;
+  value?: Moment;
+  showToday?: boolean;
+  timePicker?: ReactElement | null;
+  renderFooter?: (mode: Mode | null | undefined) => React.ReactNode;
+  mode?: Mode | null;
   showOk?: boolean;
-  onSelect: (value: Moment) => void;
+  onSelect?: (value: Moment) => void;
   locale: Locale;
   disabledDate?: (date: Moment) => boolean;
   disabledTime?: DisabledTimeFn;
@@ -46,7 +46,7 @@ export default function CalendarFooter(props: Props) {
 
   if (showToday || timePicker || extraFooter) {
     let nowEl;
-    if (showToday) {
+    if (showToday && value) {
       nowEl = <TodayButton {...props} value={value} />;
     }
     let okBtn;

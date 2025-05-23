@@ -9,7 +9,7 @@ interface Props {
   prefixCls: string;
   value: Moment;
   onValueChange: (value: Moment) => void;
-  showTimePicker: boolean;
+  showTimePicker?: boolean;
   onPanelChange: (value: Moment | null, mode: Mode) => void;
   locale: Locale;
   enablePrev?: boolean;
@@ -89,7 +89,7 @@ export default function CalendarHeader(props: Props) {
     }
   };
 
-  const monthYearElement = (showTimePicker: boolean) => {
+  const monthYearElement = (showTimePicker: boolean | undefined) => {
     const localeData = value.localeData();
     const monthBeforeYear = locale.monthBeforeYear;
     const selectClassName = `${prefixCls}-${
