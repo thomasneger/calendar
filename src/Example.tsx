@@ -4,6 +4,11 @@ import Calendar, { type CalendarProps } from './Calendar';
 import Picker from './Picker';
 import RangeCalendar from './RangeCalendar';
 import MonthCalendar from './MonthCalendar';
+import FullCalendar from './FullCalendar';
+
+// @ts-expect-error importing css
+import 'rc-select/assets/index.css';
+import Select from 'rc-select';
 
 // @ts-expect-error importing css
 import '../assets/index.less';
@@ -74,6 +79,8 @@ export function Example() {
       </Picker>
 
       <MonthCalendar />
+
+      <FullCalendar Select={Select} />
     </div>
   );
 }

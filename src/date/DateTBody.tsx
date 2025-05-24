@@ -32,7 +32,7 @@ interface Props {
   contentRender?: (current: Moment, value: Moment) => React.ReactNode;
   dateRender?: (current: Moment, value: Moment) => React.ReactNode;
   disabledDate?: (current: Moment, value: Moment) => boolean;
-  selectedValue: Moment | Moment[] | null | undefined;
+  selectedValue?: Moment | Moment[] | null | undefined;
   value: Moment;
   hoverValue?: Array<Moment>;
   showWeekNumber?: boolean;
