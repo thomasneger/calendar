@@ -2,6 +2,7 @@ import { type ReactNode } from 'react';
 import { getMonthName } from '../util';
 import type { Moment } from 'moment';
 import type { Locale } from '../types';
+import Select, { Option } from './Select';
 
 interface CalendarHeaderProps {
   value: Moment;
@@ -10,7 +11,6 @@ interface CalendarHeaderProps {
   yearSelectTotal?: number;
   onValueChange?: (value: Moment) => void;
   onTypeChange?: (type: 'date' | 'month') => void;
-  Select: React.ComponentType;
   prefixCls: string;
   type: string;
   showTypeSwitch?: boolean;
@@ -24,7 +24,6 @@ export default function CalendarHeader(props: CalendarHeaderProps) {
     onValueChange = () => {},
     onTypeChange = () => {},
     prefixCls,
-    Select,
     value,
     locale,
     type,
@@ -40,7 +39,7 @@ export default function CalendarHeader(props: CalendarHeaderProps) {
 
   const onMonthChange = (month: string) => {
     const newValue = value.clone();
-    newValue.month(parseInt(month, 10));
+    newValue.month(month);
     onValueChange(newValue);
   };
 
@@ -50,17 +49,14 @@ export default function CalendarHeader(props: CalendarHeaderProps) {
 
     const options = [];
     for (let index = start; index < end; index++) {
-      options.push(<Select.Option key={`${index}`}>{index}</Select.Option>);
+      options.push(<Option key={index}>{index}</Option>);
     }
+
     return (
       <Select
         className={`${prefixCls}-header-year-select`}
         onChange={onYearChange}
-        dropdownStyle={{ zIndex: 2000 }}
-        dropdownMenuStyle={{ maxHeight: 250, overflow: 'auto', fontSize: 12 }}
-        optionLabelProp="children"
-        value={String(year)}
-        showSearch={false}
+        value={year}
       >
         {options}
       </Select>
@@ -75,23 +71,16 @@ export default function CalendarHeader(props: CalendarHeaderProps) {
     for (let index = 0; index < 12; index++) {
       t.month(index);
       options.push(
-        <Select.Option key={`${index}`}>{getMonthName(t)}</Select.Option>,
+        <Option key={index} value={index}>
+          {getMonthName(t)}
+        </Option>,
       );
     }
 
     return (
       <Select
         className={`${prefixCls}-header-month-select`}
-        dropdownStyle={{ zIndex: 2000 }}
-        dropdownMenuStyle={{
-          maxHeight: 250,
-          overflow: 'auto',
-          overflowX: 'hidden',
-          fontSize: 12,
-        }}
-        optionLabelProp="children"
-        value={String(month)}
-        showSearch={false}
+        value={month}
         onChange={onMonthChange}
       >
         {options}

@@ -7,10 +7,6 @@ import MonthCalendar from './MonthCalendar';
 import FullCalendar from './FullCalendar';
 
 // @ts-expect-error importing css
-import 'rc-select/assets/index.css';
-import Select from 'rc-select';
-
-// @ts-expect-error importing css
 import '../assets/index.less';
 // @ts-expect-error importing css
 import 'rc-time-picker/assets/index.css';
@@ -80,7 +76,7 @@ export function Example() {
 
       <MonthCalendar />
 
-      <FullCalendar Select={Select} />
+      <FullCalendar />
     </div>
   );
 }

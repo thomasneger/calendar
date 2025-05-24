@@ -48,6 +48,52 @@
       }
     }
   }
+
+  select {
+    height: 28px;
+    line-height: 28px;
+    border-radius: 6px;
+    padding: 0 10px;
+    background-color: #fff;
+    border: 1px solid #d9d9d9;
+    color: #666;
+    font-size: 12px;
+
+    &:hover,
+    &:focus {
+      border-color: #3fc7fa;
+      box-shadow: 0 0 2px rgba(45, 183, 245, 0.8);
+      outline: none;
+    }
+
+    appearance: base-select;
+
+    position: relative;
+    &::picker-icon {
+      border-color: #999 transparent transparent transparent;
+      border-style: solid;
+      border-width: 5px 4px 0 4px;
+      height: 0;
+      width: 0;
+      margin-left: -4px;
+      margin-top: -2px;
+      position: absolute;
+      top: 50%;
+      inset-inline-end: 10px;
+    }
+
+    option {
+      padding: 0 10px;
+      height: 28px;
+      color: #666;
+      font-size: 12px;
+
+      &:checked {
+        background-color: #ddd;
+        color: #666;
+      }
+    }
+  }
 }
 
 .@{prefixClass}-fullscreen {

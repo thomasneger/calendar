@@ -30,7 +30,6 @@ interface FullCalendarProps {
   monthCellContentRender?: (date: Moment) => ReactNode;
   dateCellRender?: (date: Moment) => ReactNode;
   showTypeSwitch?: boolean;
-  Select: ComponentType;
   onSelect?: (date: Moment, cause?: { target: Cause }) => void; // TODO Check type, looks like it's an event target
   onChange?: (date: Moment) => void;
   onTypeChange?: (type: Cause) => void;
