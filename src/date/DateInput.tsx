@@ -116,13 +116,6 @@ const DateInput = forwardRef<HTMLInputElement, Props>((props, ref) => {
     }
   };
 
-  // TODO I think this is called in CommonMixin with this.focusElement.focus()
-  // focus = () => {
-  //   if (dateInputInstance) {
-  //     dateInputInstance.focus();
-  //   }
-  // };
-
   const invalidClass = invalid ? `${prefixCls}-input-invalid` : '';
   return (
     <div className={`${prefixCls}-input-wrap`}>
