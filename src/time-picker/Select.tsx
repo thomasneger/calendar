@@ -1,12 +1,26 @@
-import { Component } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEventHandler,
+  type MouseEventHandler,
+} from 'react';
 import classNames from 'classnames';
 import raf from 'raf';
 
-const scrollTo = (element, to, duration) => {
+const scrollTo = (
+  element: HTMLDivElement | null,
+  to: number,
+  duration: number,
+) => {
+  if (!element) {
+    return;
+  }
+
   // jump to target if duration zero
   if (duration <= 0) {
     raf(() => {
-      // eslint-disable-next-line no-param-reassign
       element.scrollTop = to;
     });
     return;
@@ -15,121 +29,146 @@ const scrollTo = (element, to, duration) => {
   const perTick = (difference / duration) * 10;
 
   raf(() => {
-    // eslint-disable-next-line no-param-reassign
     element.scrollTop += perTick;
     if (element.scrollTop === to) return;
     scrollTo(element, to, duration - 10);
   });
 };
 
-class Select extends Component {
-  state = {
-    active: false,
-  };
+interface SelectProps {
+  selectedIndex: number;
+  onSelect: (type: string, value: string) => void;
+  type: string;
+  options: { value: string; disabled?: boolean }[];
+  prefixCls: string;
+  onMouseEnter: (e: React.MouseEvent) => void;
+  onEsc: () => void;
+}
 
-  componentDidMount() {
-    // jump to selected option
-    this.scrollToSelected(0);
-  }
+export default function Select(props: SelectProps) {
+  const {
+    options,
+    selectedIndex,
+    prefixCls,
+    onEsc,
+    onSelect,
+    type,
+    onMouseEnter,
+  } = props;
 
-  componentDidUpdate(prevProps) {
-    const { selectedIndex } = this.props;
-    // smooth scroll to selected option
-    if (prevProps.selectedIndex !== selectedIndex) {
-      this.scrollToSelected(120);
+  const [active, setActive] = useState(false);
+
+  const scrollToSelected = useCallback(
+    (duration: number) => {
+      // move to selected item
+      if (!list.current) {
+        return;
+      }
+      let index = selectedIndex;
+      if (index < 0) {
+        index = 0;
+      }
+      const topOption = list.current.children[index] as HTMLLIElement;
+      const to = topOption.offsetTop;
+
+      scrollTo(root.current, to, duration);
+    },
+    [selectedIndex],
+  );
+
+  const prevSelectedIndexRef = useRef<number>(null);
+
+  useEffect(() => {
+    // Skip the initial render
+    if (typeof prevSelectedIndexRef.current === 'undefined') {
+      // First render - just save the value and return
+      prevSelectedIndexRef.current = selectedIndex;
+      scrollToSelected(0); // Only do instant scroll on mount
+      return;
     }
-  }
 
-  onSelect = (value) => {
-    const { onSelect, type } = this.props;
+    // Check if selectedIndex actually changed
+    if (prevSelectedIndexRef.current !== selectedIndex) {
+      // It changed, do the animated scroll
+      scrollToSelected(120);
+      // Update the ref
+      prevSelectedIndexRef.current = selectedIndex;
+    }
+  }, [selectedIndex, scrollToSelected]);
+
+  const handleSelect = (value: string) => {
     onSelect(type, value);
   };
 
-  getOptions() {
-    const { options, selectedIndex, prefixCls, onEsc } = this.props;
+  const getOptions = () => {
     return options.map((item, index) => {
       const cls = classNames({
         [`${prefixCls}-select-option-selected`]: selectedIndex === index,
         [`${prefixCls}-select-option-disabled`]: item.disabled,
       });
-      const onClick = item.disabled
-        ? undefined
-        : () => {
-            this.onSelect(item.value);
-          };
-      const onKeyDown = (e) => {
-        if (e.keyCode === 13) onClick();
-        else if (e.keyCode === 27) onEsc();
+
+      const onClick = () => {
+        if (item.disabled) {
+          return;
+        }
+
+        handleSelect(item.value);
       };
+
+      const onKeyDown: KeyboardEventHandler = (e) => {
+        if (e.key === 'Enter') {
+          onClick();
+        } else if (e.key === 'Escape') {
+          onEsc();
+        }
+      };
+
       return (
         <li
           role="button"
           onClick={onClick}
           className={cls}
-          key={index} // eslint-disable-line react/no-array-index-key
+          key={index}
+          // @ts-expect-error The original code was using `disabled` as a prop, which is not valid for `li`.
+          // That being said, it does apply the "disabled" attribute, hence people could have used it to style the element
           disabled={item.disabled}
-          tabIndex="0"
+          tabIndex={0}
           onKeyDown={onKeyDown}
         >
           {item.value}
         </li>
       );
     });
-  }
+  };
 
-  handleMouseEnter = (e) => {
-    const { onMouseEnter } = this.props;
-    this.setState({ active: true });
+  const handleMouseEnter: MouseEventHandler = (e) => {
+    setActive(true);
     onMouseEnter(e);
   };
 
-  handleMouseLeave = () => {
-    this.setState({ active: false });
+  const handleMouseLeave = () => {
+    setActive(false);
   };
 
-  saveRoot = (node) => {
-    this.root = node;
-  };
+  const root = useRef<HTMLDivElement>(null);
+  const list = useRef<HTMLUListElement | null>(null);
 
-  saveList = (node) => {
-    this.list = node;
-  };
-
-  scrollToSelected(duration) {
-    // move to selected item
-    const { selectedIndex } = this.props;
-    if (!this.list) {
-      return;
-    }
-    let index = selectedIndex;
-    if (index < 0) {
-      index = 0;
-    }
-    const topOption = this.list.children[index];
-    const to = topOption.offsetTop;
-    scrollTo(this.root, to, duration);
+  if (options.length === 0) {
+    return null;
   }
 
-  render() {
-    const { prefixCls, options } = this.props;
-    const { active } = this.state;
-    if (options.length === 0) {
-      return null;
-    }
-    const cls = classNames(`${prefixCls}-select`, {
-      [`${prefixCls}-select-active`]: active,
-    });
-    return (
-      <div
-        className={cls}
-        onMouseEnter={this.handleMouseEnter}
-        onMouseLeave={this.handleMouseLeave}
-        ref={this.saveRoot}
-      >
-        <ul ref={this.saveList}>{this.getOptions()}</ul>
-      </div>
-    );
-  }
+  const cls = classNames(`${prefixCls}-select`, {
+    [`${prefixCls}-select-active`]: active,
+  });
+
+  return (
+    <div
+      className={cls}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      ref={root}
+    >
+      <ul ref={list}>{getOptions()}</ul>
+    </div>
+  );
 }
-
-export default Select;
