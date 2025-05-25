@@ -16,10 +16,10 @@ interface ComboboxProps {
   disabledHours: () => number[];
   disabledMinutes: (hour: number) => number[];
   disabledSeconds: (hour: number, minute: number) => number[];
-  showHour: boolean;
-  showMinute: boolean;
-  showSecond: boolean;
-  format: string;
+  showHour?: boolean;
+  showMinute?: boolean;
+  showSecond?: boolean;
+  format?: string;
   onEsc: () => void;
 }
 

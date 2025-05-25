@@ -78,6 +78,8 @@ export function Example() {
       <FullCalendar />
 
       <Calendar timePicker={<TimePickerPanel />} />
+
+      <RangeCalendar timePicker={<TimePickerPanel />} />
     </div>
   );
 }

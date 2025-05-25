@@ -44,6 +44,7 @@ export default function Select(props: SelectProps) {
 
       const option = list.current.children[index] as HTMLLIElement;
 
+      // TODO Looks like this scrolls also the entire page, not just the list
       option.scrollIntoView({
         behavior: smooth ? 'smooth' : 'instant',
         block: 'start',
