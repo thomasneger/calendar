@@ -7,33 +7,6 @@ import {
   type MouseEventHandler,
 } from 'react';
 import classNames from 'classnames';
-import raf from 'raf';
-
-const scrollTo = (
-  element: HTMLDivElement | null,
-  to: number,
-  duration: number,
-) => {
-  if (!element) {
-    return;
-  }
-
-  // jump to target if duration zero
-  if (duration <= 0) {
-    raf(() => {
-      element.scrollTop = to;
-    });
-    return;
-  }
-  const difference = to - element.scrollTop;
-  const perTick = (difference / duration) * 10;
-
-  raf(() => {
-    element.scrollTop += perTick;
-    if (element.scrollTop === to) return;
-    scrollTo(element, to, duration - 10);
-  });
-};
 
 interface SelectProps {
   selectedIndex: number;
@@ -59,19 +32,22 @@ export default function Select(props: SelectProps) {
   const [active, setActive] = useState(false);
 
   const scrollToSelected = useCallback(
-    (duration: number) => {
-      // move to selected item
+    (smooth: boolean) => {
       if (!list.current) {
         return;
       }
-      let index = selectedIndex;
-      if (index < 0) {
-        index = 0;
-      }
-      const topOption = list.current.children[index] as HTMLLIElement;
-      const to = topOption.offsetTop;
 
-      scrollTo(root.current, to, duration);
+      const index = selectedIndex < 0 ? 0 : selectedIndex;
+      if (index >= list.current.children.length) {
+        return;
+      }
+
+      const option = list.current.children[index] as HTMLLIElement;
+
+      option.scrollIntoView({
+        behavior: smooth ? 'smooth' : 'instant',
+        block: 'start',
+      });
     },
     [selectedIndex],
   );
@@ -80,18 +56,14 @@ export default function Select(props: SelectProps) {
 
   useEffect(() => {
     // Skip the initial render
-    if (typeof prevSelectedIndexRef.current === 'undefined') {
-      // First render - just save the value and return
+    if (prevSelectedIndexRef.current === null) {
       prevSelectedIndexRef.current = selectedIndex;
-      scrollToSelected(0); // Only do instant scroll on mount
+      scrollToSelected(false); // Use instant scroll for first render
       return;
     }
 
-    // Check if selectedIndex actually changed
     if (prevSelectedIndexRef.current !== selectedIndex) {
-      // It changed, do the animated scroll
-      scrollToSelected(120);
-      // Update the ref
+      scrollToSelected(true); // Use smooth scroll for updates
       prevSelectedIndexRef.current = selectedIndex;
     }
   }, [selectedIndex, scrollToSelected]);
