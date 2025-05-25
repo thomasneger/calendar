@@ -7,16 +7,15 @@ import {
   type KeyboardEventHandler,
   type ReactNode,
 } from 'react';
-import KeyCode from 'rc-util/lib/KeyCode';
 import moment, { type Moment } from 'moment';
 import { formatDate } from '../util';
-import type en_US from '../locale/en_US';
+import type { Locale } from '../types';
 
 interface Props {
   prefixCls: string;
   value: Moment;
   format: string | string[];
-  locale: typeof en_US;
+  locale: Locale;
   disabledDate?: (date: Moment) => boolean;
   onChange: (date: Moment | null) => void;
   onClear?: () => void;
@@ -105,9 +104,9 @@ const DateInput = forwardRef<HTMLInputElement, Props>((props, ref) => {
   };
 
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
-    const { keyCode } = event;
+    const { key } = event;
 
-    if (keyCode === KeyCode.ENTER && onSelect) {
+    if (key === 'Enter' && onSelect) {
       const validateDate = !disabledDate || !disabledDate(value);
       if (validateDate) {
         onSelect(value.clone());

@@ -12,7 +12,6 @@ import {
   type ReactElement,
   type ReactNode,
 } from 'react';
-import KeyCode from 'rc-util/lib/KeyCode';
 import DateTable from './date/DateTable';
 import CalendarHeader from './calendar/CalendarHeader';
 import CalendarFooter from './calendar/CalendarFooter';
@@ -163,20 +162,20 @@ const Calendar = forwardRef((props: CalendarProps, forwardedRef) => {
     if ((event.target as HTMLElement).nodeName.toLowerCase() === 'input') {
       return undefined;
     }
-    const keyCode = event.keyCode;
+    const key = event.key;
     // mac
     const ctrlKey = event.ctrlKey || event.metaKey;
 
-    switch (keyCode) {
-      case KeyCode.DOWN:
+    switch (key) {
+      case 'ArrowDown':
         handleGoTime(1, 'weeks');
         event.preventDefault();
         return 1;
-      case KeyCode.UP:
+      case 'ArrowUp':
         handleGoTime(-1, 'weeks');
         event.preventDefault();
         return 1;
-      case KeyCode.LEFT:
+      case 'ArrowLeft':
         if (ctrlKey) {
           handleGoTime(-1, 'years');
         } else {
@@ -184,7 +183,7 @@ const Calendar = forwardRef((props: CalendarProps, forwardedRef) => {
         }
         event.preventDefault();
         return 1;
-      case KeyCode.RIGHT:
+      case 'ArrowRight':
         if (ctrlKey) {
           handleGoTime(1, 'years');
         } else {
@@ -192,23 +191,23 @@ const Calendar = forwardRef((props: CalendarProps, forwardedRef) => {
         }
         event.preventDefault();
         return 1;
-      case KeyCode.HOME:
+      case 'Home':
         handleValue(goStartMonth(value));
         event.preventDefault();
         return 1;
-      case KeyCode.END:
+      case 'End':
         handleValue(goEndMonth(value));
         event.preventDefault();
         return 1;
-      case KeyCode.PAGE_DOWN:
+      case 'PageDown':
         handleGoTime(1, 'month');
         event.preventDefault();
         return 1;
-      case KeyCode.PAGE_UP:
+      case 'PageUp':
         handleGoTime(-1, 'month');
         event.preventDefault();
         return 1;
-      case KeyCode.ENTER:
+      case 'Enter':
         if (!disabledDate || !disabledDate(value)) {
           handleSelect(value, {
             source: 'keyboard',
@@ -241,6 +240,7 @@ const Calendar = forwardRef((props: CalendarProps, forwardedRef) => {
     onSelect(updatedSelectedValue, cause);
   };
 
+  // TODO Extract
   const handleValue = (updatedValue: Moment) => {
     const originalValue = value;
 

@@ -1,7 +1,7 @@
 import DateTHead from './DateTHead';
 import DateTBody from './DateTBody';
 
-import type {  Moment } from 'moment';
+import type { Moment } from 'moment';
 import type { ReactNode } from 'react';
 import type { Locale } from '../types';
 

@@ -5,7 +5,6 @@ import {
   type KeyboardEventHandler,
   type ReactNode,
 } from 'react';
-import KeyCode from 'rc-util/lib/KeyCode';
 import CalendarHeader from './calendar/CalendarHeader';
 import CalendarFooter from './calendar/CalendarFooter';
 import moment, { type Moment } from 'moment';
@@ -78,6 +77,7 @@ function MonthCalendar(props: MonthCalendarProps) {
     onSelect(selectedValue, cause);
   };
 
+  // TODO Extract
   const setValue = (value: Moment) => {
     const originalValue = state.value;
     if (!('value' in props)) {
@@ -96,20 +96,20 @@ function MonthCalendar(props: MonthCalendarProps) {
   };
 
   const onKeyDown: KeyboardEventHandler = (event) => {
-    const keyCode = event.keyCode;
+    const key = event.key;
     const ctrlKey = event.ctrlKey || event.metaKey;
     let value;
 
-    switch (keyCode) {
-      case KeyCode.DOWN:
+    switch (key) {
+      case 'ArrowDown':
         value = state.value.clone();
         value.add(3, 'months');
         break;
-      case KeyCode.UP:
+      case 'ArrowUp':
         value = state.value.clone();
         value.add(-3, 'months');
         break;
-      case KeyCode.LEFT:
+      case 'ArrowLeft':
         value = state.value.clone();
         if (ctrlKey) {
           value.add(-1, 'years');
@@ -117,7 +117,7 @@ function MonthCalendar(props: MonthCalendarProps) {
           value.add(-1, 'months');
         }
         break;
-      case KeyCode.RIGHT:
+      case 'ArrowRight':
         value = state.value.clone();
         if (ctrlKey) {
           value.add(1, 'years');
@@ -125,7 +125,7 @@ function MonthCalendar(props: MonthCalendarProps) {
           value.add(1, 'months');
         }
         break;
-      case KeyCode.ENTER:
+      case 'Enter':
         if (!disabledDate || !disabledDate(state.value)) {
           handleSelect(state.value);
         }

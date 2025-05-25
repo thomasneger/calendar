@@ -1,4 +1,9 @@
-import React, { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
+import React, {
+  useEffect,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from 'react';
 import MonthTable from './MonthTable';
 import type { Moment } from 'moment';
 import type { Locale } from '../types';

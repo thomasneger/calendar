@@ -9,7 +9,6 @@ import {
 } from 'react';
 import moment, { type Moment } from 'moment';
 import classnames from 'classnames';
-import KeyCode from 'rc-util/lib/KeyCode';
 import CalendarPart from './range-calendar/CalendarPart';
 import TodayButton from './calendar/TodayButton';
 import OkButton from './calendar/OkButton';
@@ -20,6 +19,7 @@ import en_US from './locale/en_US';
 import type {
   Cause,
   DisabledTimeConfig,
+  Locale,
   Mode,
   TimePickerRangeProps,
 } from './types';
@@ -104,7 +104,7 @@ export interface RangeCalendarProps {
   selectedValue?: Moment[];
   onOk?: (value: Moment[]) => void;
   showClear?: boolean;
-  locale?: typeof en_US;
+  locale?: Locale;
   onChange?: (value: Moment[]) => void;
   onSelect?: (value: Moment[], cause: Cause | undefined) => void;
   onValueChange?: (value: Moment[]) => void;
@@ -275,7 +275,7 @@ const RangeCalendar = forwardRef<R, P>((rawProps, forwardedRef) => {
       return;
     }
 
-    const { keyCode } = event;
+    const { key } = event;
     const ctrlKey = event.ctrlKey || event.metaKey;
 
     const {
@@ -346,40 +346,40 @@ const RangeCalendar = forwardRef<R, P>((rawProps, forwardedRef) => {
       return nextHoverTime;
     };
 
-    switch (keyCode) {
-      case KeyCode.DOWN:
+    switch (key) {
+      case 'ArrowDown':
         updateHoverPoint((time) => goTime(time, 1, 'weeks'));
         return;
-      case KeyCode.UP:
+      case 'ArrowUp':
         updateHoverPoint((time) => goTime(time, -1, 'weeks'));
         return;
-      case KeyCode.LEFT:
+      case 'ArrowLeft':
         if (ctrlKey) {
           updateHoverPoint((time) => goTime(time, -1, 'years'));
         } else {
           updateHoverPoint((time) => goTime(time, -1, 'days'));
         }
         return;
-      case KeyCode.RIGHT:
+      case 'ArrowRight':
         if (ctrlKey) {
           updateHoverPoint((time) => goTime(time, 1, 'years'));
         } else {
           updateHoverPoint((time) => goTime(time, 1, 'days'));
         }
         return;
-      case KeyCode.HOME:
+      case 'Home':
         updateHoverPoint((time) => goStartMonth(time));
         return;
-      case KeyCode.END:
+      case 'End':
         updateHoverPoint((time) => goEndMonth(time));
         return;
-      case KeyCode.PAGE_DOWN:
+      case 'PageDown':
         updateHoverPoint((time) => goTime(time, 1, 'month'));
         return;
-      case KeyCode.PAGE_UP:
+      case 'PageUp':
         updateHoverPoint((time) => goTime(time, -1, 'month'));
         return;
-      case KeyCode.ENTER: {
+      case 'Enter': {
         let lastValue: Moment;
         if (hoverValue.length === 0) {
           lastValue = updateHoverPoint((time) => time);
