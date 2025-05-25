@@ -5,11 +5,10 @@ import Picker from './Picker';
 import RangeCalendar from './RangeCalendar';
 import MonthCalendar from './MonthCalendar';
 import FullCalendar from './FullCalendar';
+import TimePickerPanel from './TimePickerPanel';
 
 // @ts-expect-error importing css
 import '../assets/index.less';
-// @ts-expect-error importing css
-import 'rc-time-picker/assets/index.css';
 
 type Mode = CalendarProps['mode'];
 
@@ -77,6 +76,8 @@ export function Example() {
       <MonthCalendar />
 
       <FullCalendar />
+
+      <Calendar timePicker={<TimePickerPanel />} />
     </div>
   );
 }
