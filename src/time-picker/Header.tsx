@@ -1,175 +1,195 @@
-import { Component } from 'react';
-import moment from 'moment';
+import moment, { type Moment } from 'moment';
 import classNames from 'classnames';
+import {
+  useRef,
+  useState,
+  type ChangeEventHandler,
+  type KeyboardEventHandler,
+} from 'react';
 
-class Header extends Component {
-  static defaultProps = {
-    inputReadOnly: false,
-  };
+interface HeaderProps {
+  prefixCls: string;
+  value?: Moment;
+  format: string;
+  defaultOpenValue: Moment;
+  hourOptions: number[];
+  minuteOptions: number[];
+  secondOptions: number[];
+  disabledHours: () => number[];
+  disabledMinutes: (hour: number) => number[];
+  disabledSeconds: (hour: number, minute: number) => number[];
+  onChange: (value: Moment | null) => void;
+  onEsc: () => void;
+  onKeyDown: KeyboardEventHandler;
+  focusOnOpen?: boolean;
+  placeholder?: string;
+  inputReadOnly?: boolean;
+}
 
-  constructor(props) {
-    super(props);
-    const { value, format } = props;
-    this.state = {
-      str: (value && value.format(format)) || '',
-      invalid: false,
-    };
-  }
+export default function Header(props: HeaderProps) {
+  const {
+    inputReadOnly = false,
+    value,
+    defaultOpenValue,
+    format,
+    hourOptions,
+    minuteOptions,
+    secondOptions,
+    disabledHours,
+    disabledMinutes,
+    disabledSeconds,
+    onChange,
+    onEsc,
+    onKeyDown,
+    prefixCls,
+    placeholder,
+  } = props;
 
-  componentDidMount() {
-    const { focusOnOpen } = this.props;
-    if (focusOnOpen) {
-      // requestAnimationFrame will cause jump on rc-trigger 3.x
-      // https://github.com/ant-design/ant-design/pull/19698#issuecomment-552889571
-      // use setTimeout can resolve it
-      // 60ms is a magic timeout to avoid focusing before dropdown reposition correctly
-      this.timeout = setTimeout(() => {
-        this.refInput.focus();
-        this.refInput.select();
-      }, 60);
-    }
-  }
+  // static defaultProps = {
+  //   inputReadOnly: false,
+  // };
 
-  componentDidUpdate(prevProps) {
-    const { value, format } = this.props;
-    if (value !== prevProps.value) {
-      // eslint-disable-next-line react/no-did-update-set-state
-      this.setState({
-        str: (value && value.format(format)) || '',
-        invalid: false,
-      });
-    }
-  }
+  // constructor(props) {
+  //   super(props);
+  //   const { value, format } = props;
+  //   this.state = {
+  //     str: (value && value.format(format)) || '',
+  //     invalid: false,
+  //   };
+  // }
 
-  componentWillUnmount() {
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-    }
-  }
+  const [str, setStr] = useState((value && value.format(format)) || '');
+  const [invalid, setInvalid] = useState(false);
 
-  onInputChange = (event) => {
+  const refInput = useRef<HTMLInputElement>(null);
+
+  // TODO This will most likely be a useEffect
+  // componentDidMount() {
+  //   const { focusOnOpen } = this.props;
+  //   if (focusOnOpen) {
+  //     // requestAnimationFrame will cause jump on rc-trigger 3.x
+  //     // https://github.com/ant-design/ant-design/pull/19698#issuecomment-552889571
+  //     // use setTimeout can resolve it
+  //     // 60ms is a magic timeout to avoid focusing before dropdown reposition correctly
+  //     this.timeout = setTimeout(() => {
+  //       this.refInput.focus();
+  //       this.refInput.select();
+  //     }, 60);
+  //   }
+  // }
+
+  // TODO refactor with useEffect
+  // componentDidUpdate(prevProps) {
+  //   const { value, format } = this.props;
+  //   if (value !== prevProps.value) {
+  //     // eslint-disable-next-line react/no-did-update-set-state
+  //     this.setState({
+  //       str: (value && value.format(format)) || '',
+  //       invalid: false,
+  //     });
+  //   }
+  // }
+
+  // componentWillUnmount() {
+  //   if (this.timeout) {
+  //     clearTimeout(this.timeout);
+  //   }
+  // }
+
+  const handleInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     const str = event.target.value;
-    this.setState({
-      str,
-    });
-    const {
-      format,
-      hourOptions,
-      minuteOptions,
-      secondOptions,
-      disabledHours,
-      disabledMinutes,
-      disabledSeconds,
-      onChange,
-    } = this.props;
+    setStr(str);
 
     if (str) {
-      const { value: originalValue } = this.props;
-      const value = this.getProtoValue().clone();
+      const initValue = getInitValue().clone();
       const parsed = moment(str, format, true);
       if (!parsed.isValid()) {
-        this.setState({
-          invalid: true,
-        });
+        setInvalid(true);
         return;
       }
-      value.hour(parsed.hour()).minute(parsed.minute()).second(parsed.second());
+      initValue
+        .hour(parsed.hour())
+        .minute(parsed.minute())
+        .second(parsed.second());
 
       // if time value not allowed, response warning.
       if (
-        hourOptions.indexOf(value.hour()) < 0 ||
-        minuteOptions.indexOf(value.minute()) < 0 ||
-        secondOptions.indexOf(value.second()) < 0
+        hourOptions.indexOf(initValue.hour()) < 0 ||
+        minuteOptions.indexOf(initValue.minute()) < 0 ||
+        secondOptions.indexOf(initValue.second()) < 0
       ) {
-        this.setState({
-          invalid: true,
-        });
+        setInvalid(true);
         return;
       }
 
       // if time value is disabled, response warning.
       const disabledHourOptions = disabledHours();
-      const disabledMinuteOptions = disabledMinutes(value.hour());
+      const disabledMinuteOptions = disabledMinutes(initValue.hour());
       const disabledSecondOptions = disabledSeconds(
-        value.hour(),
-        value.minute(),
+        initValue.hour(),
+        initValue.minute(),
       );
       if (
         (disabledHourOptions &&
-          disabledHourOptions.indexOf(value.hour()) >= 0) ||
+          disabledHourOptions.indexOf(initValue.hour()) >= 0) ||
         (disabledMinuteOptions &&
-          disabledMinuteOptions.indexOf(value.minute()) >= 0) ||
+          disabledMinuteOptions.indexOf(initValue.minute()) >= 0) ||
         (disabledSecondOptions &&
-          disabledSecondOptions.indexOf(value.second()) >= 0)
+          disabledSecondOptions.indexOf(initValue.second()) >= 0)
       ) {
-        this.setState({
-          invalid: true,
-        });
+        setInvalid(true);
         return;
       }
 
-      if (originalValue) {
+      if (value) {
         if (
-          originalValue.hour() !== value.hour() ||
-          originalValue.minute() !== value.minute() ||
-          originalValue.second() !== value.second()
+          value.hour() !== initValue.hour() ||
+          value.minute() !== initValue.minute() ||
+          value.second() !== initValue.second()
         ) {
           // keep other fields for rc-calendar
-          const changedValue = originalValue.clone();
-          changedValue.hour(value.hour());
-          changedValue.minute(value.minute());
-          changedValue.second(value.second());
+          const changedValue = value.clone();
+          changedValue.hour(initValue.hour());
+          changedValue.minute(initValue.minute());
+          changedValue.second(initValue.second());
           onChange(changedValue);
         }
-      } else if (originalValue !== value) {
-        onChange(value);
+      } else if (value !== initValue) {
+        onChange(initValue);
       }
     } else {
       onChange(null);
     }
 
-    this.setState({
-      invalid: false,
-    });
+    setInvalid(false);
   };
 
-  onKeyDown = (e) => {
-    const { onEsc, onKeyDown } = this.props;
-    if (e.keyCode === 27) {
+  const handleKeyDown: KeyboardEventHandler = (e) => {
+    if (e.key === 'Escape') {
       onEsc();
     }
 
     onKeyDown(e);
   };
 
-  getProtoValue() {
-    const { value, defaultOpenValue } = this.props;
+  const getInitValue = () => {
     return value || defaultOpenValue;
-  }
+  };
 
-  getInput() {
-    const { prefixCls, placeholder, inputReadOnly } = this.props;
-    const { invalid, str } = this.state;
+  const getInput = () => {
     const invalidClass = invalid ? `${prefixCls}-input-invalid` : '';
     return (
       <input
         className={classNames(`${prefixCls}-input`, invalidClass)}
-        ref={(ref) => {
-          this.refInput = ref;
-        }}
-        onKeyDown={this.onKeyDown}
+        ref={refInput}
+        onKeyDown={handleKeyDown}
         value={str}
         placeholder={placeholder}
-        onChange={this.onInputChange}
+        onChange={handleInputChange}
         readOnly={!!inputReadOnly}
       />
     );
-  }
+  };
 
-  render() {
-    const { prefixCls } = this.props;
-    return <div className={`${prefixCls}-input-wrap`}>{this.getInput()}</div>;
-  }
+  return <div className={`${prefixCls}-input-wrap`}>{getInput()}</div>;
 }
-
-export default Header;
