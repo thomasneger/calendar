@@ -1,7 +1,6 @@
 import { Component } from 'react';
 import moment from 'moment';
 import classNames from 'classnames';
-import Header from './time-picker/Header';
 import Combobox from './time-picker/Combobox';
 
 function noop() {}
@@ -172,27 +171,6 @@ class Panel extends Component {
 
     return (
       <div className={classNames(className, `${prefixCls}-inner`)}>
-        <Header
-          clearText={clearText}
-          prefixCls={prefixCls}
-          defaultOpenValue={validDefaultOpenValue}
-          value={value}
-          currentSelectPanel={currentSelectPanel}
-          onEsc={onEsc}
-          format={format}
-          placeholder={placeholder}
-          hourOptions={hourOptions}
-          minuteOptions={minuteOptions}
-          secondOptions={secondOptions}
-          disabledHours={this.disabledHours}
-          disabledMinutes={disabledMinutes}
-          disabledSeconds={disabledSeconds}
-          onChange={this.onChange}
-          focusOnOpen={focusOnOpen}
-          onKeyDown={onKeyDown}
-          inputReadOnly={inputReadOnly}
-          clearIcon={clearIcon}
-        />
         <Combobox
           prefixCls={prefixCls}
           value={value}
