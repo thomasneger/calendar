@@ -74,7 +74,7 @@ export interface CalendarProps {
   disabledDate?: (date: Moment, selected?: Moment) => boolean;
   disabledTime?: DisabledTimeFn;
   dateRender?: (current: Moment, today: Moment) => ReactNode;
-  renderFooter?: () => ReactNode;
+  renderFooter?: (mode: Mode | null | undefined) => ReactNode;
   renderSidebar?: () => ReactNode;
   clearIcon?: ReactNode;
   focusablePanel?: boolean;

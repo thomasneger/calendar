@@ -6,12 +6,12 @@ import React, {
 } from 'react';
 import MonthTable from './MonthTable';
 import type { Moment } from 'moment';
-import type { Locale } from '../types';
+import type { Locale, Mode } from '../types';
 
 interface Props {
   disabledDate?: (date: Moment) => boolean;
   onSelect: (date: Moment) => void;
-  renderFooter?: (mode: string) => ReactNode;
+  renderFooter?: (mode: Mode) => ReactNode;
   rootPrefixCls: string;
   value: Moment;
   defaultValue?: Moment;

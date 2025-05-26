@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import classnames from 'classnames';
 import type { Moment } from 'moment';
-import type { Locale } from '../types';
+import type { Locale, Mode } from '../types';
 
 const ROW = 4;
 const COL = 3;
@@ -11,7 +11,7 @@ interface Props {
   value?: Moment;
   defaultValue: Moment;
   rootPrefixCls: string;
-  renderFooter?: (mode: string) => React.ReactNode;
+  renderFooter?: (mode: Mode) => React.ReactNode;
   onSelect: (value: Moment) => void;
 }
 

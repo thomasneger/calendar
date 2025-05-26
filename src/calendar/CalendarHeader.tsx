@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import MonthPanel from '../month/MonthPanel';
 import YearPanel from '../year/YearPanel';
 import DecadePanel from '../decade/DecadePanel';
@@ -15,10 +15,10 @@ interface Props {
   enablePrev?: boolean;
   enableNext?: boolean;
   disabledMonth?: (date: Moment) => boolean;
-  renderFooter?: () => React.ReactNode;
+  renderFooter?: (mode: Mode) => ReactNode;
   onMonthSelect?: (value: Moment) => void;
-  monthCellRender?: (date: Moment) => React.ReactNode;
-  monthCellContentRender?: (date: Moment) => React.ReactNode;
+  monthCellRender?: (date: Moment) => ReactNode;
+  monthCellContentRender?: (date: Moment) => ReactNode;
   mode: Mode | null;
 }
 
