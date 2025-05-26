@@ -21,7 +21,7 @@ import { goStartMonth, goEndMonth, goTime, type Unit } from './util/toTime';
 import moment, { type Moment } from 'moment';
 import enUs from './locale/en_US';
 import classNames from 'classnames';
-import type { Cause, DisabledTimeFn, Mode } from './types';
+import type { Cause, DisabledTimeFn, Locale, Mode } from './types';
 import { useGetFormat } from './util/format';
 
 const getMomentObjectIfValid = (date: Moment | undefined) => {
@@ -48,7 +48,7 @@ export interface CalendarProps {
   defaultSelectedValue?: Moment;
   visible?: boolean;
   mode?: Mode;
-  locale?: typeof enUs;
+  locale?: Locale;
   showDateInput?: boolean;
   showWeekNumber?: boolean;
   showToday?: boolean;
