@@ -36,7 +36,7 @@ export type Locale = {
   dateFormat: string;
   dayFormat: string;
   dateTimeFormat: string;
-  monthBeforeYear: boolean;
+  monthBeforeYear?: boolean;
   previousMonth: string;
   nextMonth: string;
   previousYear: string;
