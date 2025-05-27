@@ -15,6 +15,12 @@ interface TimePickerPanelProps {
   showSecond?: boolean;
   format?: string;
   value?: Moment;
+  /**
+   * Default initial value that time picker will use for the hour/minute/second
+   * when it is opened for the first time. This should be a valid moment object
+   * @example moment('08:00:00', 'HH:mm:ss')
+   */
+  defaultValue?: Moment | Moment[];
   defaultOpenValue?: Moment;
   clearText?: string;
   onChange?: (value: Moment) => void;
