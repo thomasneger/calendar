@@ -1,6 +1,5 @@
 import '../assets/index.less';
-import { type ChangeEventHandler, type ReactNode } from 'react';
-import { createRoot } from 'react-dom/client';
+import { useRef, useState, type ChangeEventHandler } from 'react';
 import Calendar from '../src/Calendar';
 import DatePicker from '../src/Picker';
 import zhCN from '../src/locale/zh_CN';
@@ -11,6 +10,7 @@ import moment, { type Moment } from 'moment';
 
 import 'moment/locale/zh-cn';
 import 'moment/locale/en-gb';
+import { renderDemo } from './demo';
 
 const format = 'YYYY-MM-DD HH:mm:ss';
 const cn = location.search.indexOf('cn') !== -1;
@@ -229,55 +229,33 @@ function onStandaloneChange(value: Moment | null) {
   console.log(value && value.format(format));
 }
 
-const node = document.getElementById('root');
-const root = createRoot(node!);
-
-root.render(
-  <DemoWrapper>
+renderDemo(
+  <div>
+    <div style={{ margin: 10 }}>
+      <Calendar
+        showWeekNumber={false}
+        locale={cn ? zhCN : enUS}
+        defaultValue={now}
+        disabledTime={disabledTime}
+        showToday
+        format={getFormat(true)}
+        showOk={false}
+        timePicker={timePickerElement}
+        onChange={onStandaloneChange}
+        disabledDate={disabledDate}
+        onSelect={onStandaloneSelect}
+        renderFooter={(mode) => <span>{mode} extra footer</span>}
+      />
+    </div>
+    <div style={{ float: 'left', width: 300 }}>
+      <Demo defaultValue={now} />
+    </div>
+    <div style={{ float: 'right', width: 300 }}>
+      <Demo defaultCalendarValue={defaultCalendarValue} />
+    </div>
+    <div style={{ clear: 'both' }}></div>
     <div>
-      <div style={{ margin: 10 }}>
-        <Calendar
-          showWeekNumber={false}
-          locale={cn ? zhCN : enUS}
-          defaultValue={now}
-          disabledTime={disabledTime}
-          showToday
-          format={getFormat(true)}
-          showOk={false}
-          timePicker={timePickerElement}
-          onChange={onStandaloneChange}
-          disabledDate={disabledDate}
-          onSelect={onStandaloneSelect}
-          renderFooter={(mode) => <span>{mode} extra footer</span>}
-        />
-      </div>
-      <div style={{ float: 'left', width: 300 }}>
-        <Demo defaultValue={now} />
-      </div>
-      <div style={{ float: 'right', width: 300 }}>
-        <Demo defaultCalendarValue={defaultCalendarValue} />
-      </div>
-      <div style={{ clear: 'both' }}></div>
-      <div>
-        <DemoMultiFormat />
-      </div>
+      <DemoMultiFormat />
     </div>
-  </DemoWrapper>,
+  </div>,
 );
-
-import './demo.css';
-import { useState } from 'react';
-import { useRef } from 'react';
-
-function DemoWrapper({ children }: { children: ReactNode }) {
-  return (
-    <div className="container">
-      <div className="header">
-        <h1>rc-calendar@10.0.0</h1>
-        <p>React Calendar</p>
-      </div>
-
-      <div className="example">{children}</div>
-    </div>
-  );
-}
