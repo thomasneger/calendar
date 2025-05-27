@@ -13,9 +13,9 @@ import type { Locale } from './types';
 import en_US from './locale/en_US';
 import classNames from 'classnames';
 
-interface FullCalendarProps {
-  type?: 'date' | 'month';
-  defaultType?: 'date' | 'month';
+export interface FullCalendarProps {
+  type?: Cause;
+  defaultType?: Cause;
   value?: Moment;
   defaultValue?: Moment;
   selectedValue?: Moment;
@@ -159,7 +159,7 @@ export default function FullCalendar(props: FullCalendarProps) {
     }
   }, [props.selectedValue]);
 
-  const setType = (type: 'date' | 'month') => {
+  const setType = (type: Cause) => {
     if (!('type' in props)) {
       setState((prev) => ({
         ...prev,
