@@ -1,14 +1,11 @@
-/* eslint react/no-multi-comp:0, no-console:0 */
-
-import 'rc-calendar/assets/index.less';
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Calendar from 'rc-calendar';
-import RangeCalendar from 'rc-calendar/src/RangeCalendar';
-import 'rc-time-picker/assets/index.css';
+import '../assets/index.less';
+import Calendar from '../src/Calendar';
+import RangeCalendar from '../src/RangeCalendar';
 
 import 'moment/locale/zh-cn';
 import 'moment/locale/en-gb';
+import { renderDemo } from './demo';
+import type { Mode } from '../src/types';
 
 const clearPath =
   'M909.1 209.3l-56.4 44.1C775.8 155.1 656.2 92 521.9 92 ' +
@@ -55,7 +52,8 @@ const svg = (
   </i>
 );
 
-const calendars = ['time', 'date', 'month', 'year', 'decade'].map((mode) => {
+const modes: Mode[] = ['time', 'date', 'month', 'year', 'decade'];
+const calendars = modes.map((mode) => {
   return (
     <div key={mode} style={{ marginBottom: '1rem' }}>
       <div>{mode}</div>
@@ -64,23 +62,13 @@ const calendars = ['time', 'date', 'month', 'year', 'decade'].map((mode) => {
   );
 });
 
-ReactDOM.render(
-  <div
-    style={{
-      zIndex: 1000,
-      position: 'relative',
-      width: 900,
-      margin: '20px auto',
-    }}
-  >
-    <div>
-      <div style={{ margin: 10 }}>
-        <Calendar clearIcon={svg} />
-      </div>
-      {calendars}
-      <div style={{ clear: 'both' }}></div>
-      <RangeCalendar showClear clearIcon={svg} />
+renderDemo(
+  <div>
+    <div style={{ margin: 10 }}>
+      <Calendar clearIcon={svg} />
     </div>
+    {calendars}
+    <div style={{ clear: 'both' }}></div>
+    <RangeCalendar showClear clearIcon={svg} />
   </div>,
-  document.getElementById('__react-content'),
 );
