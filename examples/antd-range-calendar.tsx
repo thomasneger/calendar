@@ -1,18 +1,15 @@
-/* eslint react/no-multi-comp:0, no-console:0 */
+import { useState } from 'react';
+import Picker from '../src/Picker';
+import RangeCalendar from '../src/RangeCalendar';
+import zhCN from '../src/locale/zh_CN';
+import enUS from '../src/locale/en_US';
+import TimePickerPanel from '../src/TimePickerPanel';
+import '../assets/index.less';
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Picker from 'rc-calendar/src/Picker';
-import RangeCalendar from 'rc-calendar/src/RangeCalendar';
-import zhCN from 'rc-calendar/src/locale/zh_CN';
-import enUS from 'rc-calendar/src/locale/en_US';
-import TimePickerPanel from 'rc-time-picker/lib/Panel';
-import 'rc-calendar/assets/index.less';
-import 'rc-time-picker/assets/index.css';
-
-import moment from 'moment';
+import moment, { type Moment } from 'moment';
 import 'moment/locale/zh-cn';
 import 'moment/locale/en-gb';
+import { renderDemo } from './demo';
 
 const cn = location.search.indexOf('cn') !== -1;
 
@@ -41,7 +38,7 @@ const timePickerElement = (
   />
 );
 
-function newArray(start, end) {
+function newArray(start: number, end: number) {
   const result = [];
   for (let i = start; i < end; i++) {
     result.push(i);
@@ -49,7 +46,7 @@ function newArray(start, end) {
   return result;
 }
 
-function disabledDate(current) {
+function disabledDate(current: Moment) {
   const date = moment();
   date.hour(0);
   date.minute(0);
@@ -57,7 +54,7 @@ function disabledDate(current) {
   return current.isBefore(date); // can not select days before today
 }
 
-function disabledTime(time, type) {
+function disabledTime(time: Moment[], type: string) {
   console.log('disabledTime', time, type);
   if (type === 'start') {
     return {
@@ -66,7 +63,7 @@ function disabledTime(time, type) {
         hours.splice(20, 4);
         return hours;
       },
-      disabledMinutes(h) {
+      disabledMinutes(h: number | undefined) {
         if (h === 20) {
           return newArray(0, 31);
         } else if (h === 23) {
@@ -85,7 +82,7 @@ function disabledTime(time, type) {
       hours.splice(2, 6);
       return hours;
     },
-    disabledMinutes(h) {
+    disabledMinutes(h: number) {
       if (h === 20) {
         return newArray(0, 31);
       } else if (h === 23) {
@@ -100,84 +97,79 @@ function disabledTime(time, type) {
 }
 
 const formatStr = 'YYYY-MM-DD HH:mm:ss';
-function format(v) {
+function format(v: Moment) {
   return v ? v.format(formatStr) : '';
 }
 
-function isValidRange(v) {
+function isValidRange(v: Moment[] | null) {
   return v && v[0] && v[1];
 }
 
-function onStandaloneChange(value) {
+function onStandaloneChange(value: Moment[]) {
   console.log('onChange');
   console.log(value[0] && format(value[0]), value[1] && format(value[1]));
 }
 
-function onStandaloneSelect(value) {
+function onStandaloneSelect(value: Moment[]) {
   console.log('onSelect');
   console.log(format(value[0]), format(value[1]));
 }
 
-class Demo extends React.Component {
-  state = {
-    value: [],
-    hoverValue: [],
-  };
+function Demo() {
+  const [value, setValue] = useState<Moment[]>([]);
+  const [hoverValue, setHoverValue] = useState<Moment[]>([]);
 
-  onChange = (value) => {
+  const onChange = (value: Moment[]) => {
     console.log('onChange', value);
-    this.setState({ value });
+    setValue(value);
   };
 
-  onHoverChange = (hoverValue) => {
-    this.setState({ hoverValue });
+  const onHoverChange = (hoverValue: Moment[]) => {
+    console.log('hoverValue', hoverValue);
+    setHoverValue(hoverValue);
   };
 
-  render() {
-    const state = this.state;
-    const calendar = (
-      <RangeCalendar
-        hoverValue={state.hoverValue}
-        onHoverChange={this.onHoverChange}
-        showWeekNumber={false}
-        dateInputPlaceholder={['start', 'end']}
-        defaultValue={[now, now.clone().add(1, 'months')]}
-        locale={cn ? zhCN : enUS}
-        disabledTime={disabledTime}
-        timePicker={timePickerElement}
-      />
-    );
-    return (
-      <Picker
-        value={state.value}
-        onChange={this.onChange}
-        animation="slide-up"
-        calendar={calendar}
-      >
-        {({ value }) => {
-          return (
-            <span>
-              <input
-                placeholder="please select"
-                style={{ width: 350 }}
-                disabled={state.disabled}
-                readOnly
-                className="ant-calendar-picker-input ant-input"
-                value={
-                  (isValidRange(value) &&
-                    `${format(value[0])} - ${format(value[1])}`) ||
-                  ''
-                }
-              />
-            </span>
-          );
-        }}
-      </Picker>
-    );
-  }
+  const calendar = (
+    <RangeCalendar
+      hoverValue={hoverValue}
+      onHoverChange={onHoverChange}
+      showWeekNumber={false}
+      dateInputPlaceholder={['start', 'end']}
+      defaultValue={[now, now.clone().add(1, 'months')]}
+      locale={cn ? zhCN : enUS}
+      disabledTime={disabledTime}
+      timePicker={timePickerElement}
+    />
+  );
+  return (
+    <Picker
+      value={value}
+      onChange={onChange}
+      animation="slide-up"
+      calendar={calendar}
+    >
+      {({ value }) => {
+        return (
+          <span>
+            <input
+              placeholder="please select"
+              style={{ width: 350 }}
+              readOnly
+              className="ant-calendar-picker-input ant-input"
+              value={
+                (isValidRange(value) &&
+                  `${format(value[0])} - ${format(value[1])}`) ||
+                ''
+              }
+            />
+          </span>
+        );
+      }}
+    </Picker>
+  );
 }
 
-ReactDOM.render(
+renderDemo(
   <div>
     <h2>calendar</h2>
     <div style={{ margin: 10 }}>
@@ -203,5 +195,4 @@ ReactDOM.render(
       <Demo />
     </div>
   </div>,
-  document.getElementById('__react-content'),
 );
