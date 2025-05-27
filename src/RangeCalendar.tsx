@@ -130,7 +130,7 @@ function initProps(props: RangeCalendarProps) {
     prefixCls: props.prefixCls || 'rc-calendar',
     className: props.className || '',
     style: props.style || {},
-    visible: props.visible || true,
+    visible: props.visible ?? true,
     dateInputPlaceholder: props.dateInputPlaceholder || '',
     seperator: props.seperator || '~',
     defaultValue: props.defaultValue || null,
@@ -154,8 +154,8 @@ function initProps(props: RangeCalendarProps) {
       })),
     onInputSelect: props.onInputSelect || (() => {}),
     onOk: props.onOk || (() => {}),
-    showToday: props.showToday || true,
-    showDateInput: props.showDateInput || true,
+    showToday: props.showToday ?? true,
+    showDateInput: props.showDateInput ?? true,
   } as const;
 }
 
