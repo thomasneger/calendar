@@ -1,4 +1,3 @@
-// @ts-expect-error importing css
 import '../assets/index.less';
 import { type ChangeEventHandler, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -9,9 +8,8 @@ import enUS from '../src/locale/en_US';
 import TimePickerPanel from '../src/TimePickerPanel';
 
 import moment, { type Moment } from 'moment';
-// @ts-expect-error moment locale import is not typed
+
 import 'moment/locale/zh-cn';
-// @ts-expect-error moment locale import is not typed
 import 'moment/locale/en-gb';
 
 const format = 'YYYY-MM-DD HH:mm:ss';
@@ -267,7 +265,6 @@ root.render(
   </DemoWrapper>,
 );
 
-// @ts-expect-error importing css
 import './demo.css';
 import { useState } from 'react';
 import { useRef } from 'react';

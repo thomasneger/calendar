@@ -7,7 +7,6 @@ import MonthCalendar from './MonthCalendar';
 import FullCalendar from './FullCalendar';
 import TimePickerPanel from './TimePickerPanel';
 
-// @ts-expect-error importing css
 import '../assets/index.less';
 
 type Mode = CalendarProps['mode'];
