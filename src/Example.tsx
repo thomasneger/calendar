@@ -19,6 +19,36 @@ export function Example() {
 
   return (
     <div>
+      <ul>
+        <li>
+          <a href="/examples/antd-calendar.html">antd-calendar</a>
+        </li>
+        <li>
+          <a href="/examples/antd-month-calendar.html">antd-month-calendar</a>
+        </li>
+        <li>
+          <a href="/examples/control-panel.html">control-panel</a>
+        </li>
+        <li>
+          <a href="/examples/custom-clear-icon.html">custom-clear-icon</a>
+        </li>
+        <li>
+          <a href="/examples/full-calendar.html">full-calendar</a>
+        </li>
+        <li>
+          <a href="/examples/getCalendarContainer.html">getCalendarContainer</a>
+        </li>
+        <li>
+          <a href="/examples/start-end-range.html">start-end-range</a>
+        </li>
+        <li>
+          <a href="/examples/start-end.html">start-end</a>
+        </li>
+        <li>
+          <a href="/examples/week.html">week</a>
+        </li>
+      </ul>
+
       <input value={input} onChange={(e) => setInput(e.target.value)} />
 
       <select name="" id="" onChange={(e) => setMode(e.target.value as Mode)}>
