@@ -78,7 +78,7 @@ export function Example() {
 
       <Calendar timePicker={<TimePickerPanel />} />
 
-      <RangeCalendar timePicker={<TimePickerPanel />} />
+      <RangeCalendar timePicker={<TimePickerPanel />} showWeekNumber />
     </div>
   );
 }
