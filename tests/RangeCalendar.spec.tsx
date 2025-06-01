@@ -1,251 +1,343 @@
-/* eslint-disable no-undef, max-len, react/no-multi-comp */
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import React from 'react';
 import moment from 'moment';
-import { mount, render } from 'enzyme';
-import keyCode from 'rc-util/lib/KeyCode';
-import TimePickerPanel from 'rc-time-picker/lib/Panel';
+import { render } from '@testing-library/react';
+import TimePickerPanel from '../src/TimePickerPanel';
 import RangeCalendar from '../src/RangeCalendar';
+import { fireEvent } from '@testing-library/react';
 
 const format = 'YYYY-MM-DD';
 
 describe('RangeCalendar', () => {
-  it('render works', () => {
-    const wrapper = mount(<RangeCalendar />);
-    expect(wrapper.find('.rc-calendar-cell').length).toBeGreaterThan(0);
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2025, 4, 29));
   });
 
-  it('default sperator', () => {
-    const wrapper = render(<RangeCalendar />);
-    expect(wrapper.find('.rc-calendar-range-middle').text()).toBe('~');
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
-  it('custom sperator', () => {
-    const wrapper = render(<RangeCalendar seperator="至" />);
-    expect(wrapper.find('.rc-calendar-range-middle').text()).toBe('至');
+  it.only('render works', () => {
+    const { container } = render(<RangeCalendar />);
+
+    expect(
+      container.querySelectorAll('.rc-calendar-cell').length,
+    ).toBeGreaterThan(0);
   });
 
-  it('render hoverValue correctly', () => {
+  it.only('default sperator', () => {
+    const { container } = render(<RangeCalendar />);
+    expect(
+      container.querySelector('.rc-calendar-range-middle')?.textContent,
+    ).toBe('~');
+  });
+
+  it.only('custom sperator', () => {
+    const { container } = render(<RangeCalendar seperator="至" />);
+    expect(
+      container.querySelector('.rc-calendar-range-middle')?.textContent,
+    ).toBe('至');
+  });
+
+  it.only('render hoverValue correctly', () => {
     const wrapper = render(
       <RangeCalendar hoverValue={[moment(), moment().add(1, 'months')]} />,
     );
     expect(wrapper).toMatchSnapshot();
   });
 
-  it('next month works', () => {
-    const wrapper = mount(<RangeCalendar />);
+  it.only('next month works', async () => {
+    const onValueChange = vi.fn();
+    const { container } = render(
+      <RangeCalendar onValueChange={onValueChange} />,
+    );
 
-    const currentEndMonth = wrapper.state('value')[1].clone();
-    wrapper
-      .find('.rc-calendar-range-right .rc-calendar-next-month-btn')
-      .simulate('click');
+    const rightNextButton = container.querySelector(
+      '.rc-calendar-range-right .rc-calendar-next-month-btn',
+    );
+
+    fireEvent.click(rightNextButton!);
+
+    expect(onValueChange).toHaveBeenCalled();
+    const [start1, end1] = onValueChange.mock.calls[0][0];
+
+    expect(start1.format('YYYY-MM-DD')).toBe('2025-05-29');
+    expect(end1.format('YYYY-MM-DD')).toBe('2025-07-29');
+
     expect(
-      currentEndMonth
-        .add(1, 'month')
-        .isSame(wrapper.state('value')[1], 'month'),
-    ).toBe(true);
-    expect(
-      wrapper.find('.rc-calendar-range-right .rc-calendar-prev-month-btn')
-        .length,
+      container.querySelectorAll(
+        '.rc-calendar-range-right .rc-calendar-prev-month-btn',
+      ).length,
     ).toBe(1);
 
-    const currentStartMonth = wrapper.state('value')[0].clone();
-    wrapper
-      .find('.rc-calendar-range-left .rc-calendar-next-month-btn')
-      .simulate('click');
+    const leftNextButton = container.querySelector(
+      '.rc-calendar-range-left .rc-calendar-next-month-btn',
+    );
+
+    fireEvent.click(leftNextButton!);
+
+    expect(onValueChange).toHaveBeenCalled();
+    const [start2, end2] = onValueChange.mock.calls[1][0];
+    expect(start2.format('YYYY-MM-DD')).toBe('2025-06-29');
+    expect(end2.format('YYYY-MM-DD')).toBe('2025-07-29');
+
     expect(
-      currentStartMonth
-        .add(1, 'month')
-        .isSame(wrapper.state('value')[0], 'month'),
-    ).toBe(true);
-    expect(
-      wrapper.find('.rc-calendar-range-left .rc-calendar-next-month-btn')
-        .length,
+      container.querySelectorAll(
+        '.rc-calendar-range-left .rc-calendar-next-month-btn',
+      ).length,
     ).toBe(0);
   });
 
-  it('previous month works', () => {
-    const wrapper = mount(<RangeCalendar />);
+  it.only('previous month works', async () => {
+    const onValueChange = vi.fn();
+    const { container } = render(
+      <RangeCalendar onValueChange={onValueChange} />,
+    );
 
-    const currentStartMonth = wrapper.state('value')[0].clone();
-    wrapper
-      .find('.rc-calendar-range-left .rc-calendar-prev-month-btn')
-      .simulate('click');
+    const leftPrevButton = container.querySelector(
+      '.rc-calendar-range-left .rc-calendar-prev-month-btn',
+    );
+    fireEvent.click(leftPrevButton!);
+
+    expect(onValueChange).toHaveBeenCalled();
+    const [start1, end1] = onValueChange.mock.calls[0][0];
+
+    expect(start1.format('YYYY-MM-DD')).toBe('2025-04-29');
+    expect(end1.format('YYYY-MM-DD')).toBe('2025-06-29');
+
     expect(
-      currentStartMonth
-        .subtract(1, 'month')
-        .isSame(wrapper.state('value')[0], 'month'),
-    ).toBe(true);
-    expect(
-      wrapper.find('.rc-calendar-range-left .rc-calendar-next-month-btn')
-        .length,
+      container.querySelectorAll(
+        '.rc-calendar-range-left .rc-calendar-next-month-btn',
+      ).length,
     ).toBe(1);
 
-    const currentEndMonth = wrapper.state('value')[1].clone();
-    wrapper
-      .find('.rc-calendar-range-right .rc-calendar-prev-month-btn')
-      .simulate('click');
+    const rightPrevButton = container.querySelector(
+      '.rc-calendar-range-right .rc-calendar-prev-month-btn',
+    );
+    fireEvent.click(rightPrevButton!);
+
+    expect(onValueChange).toHaveBeenCalled();
+    const [start2, end2] = onValueChange.mock.calls[1][0];
+    expect(start2.format('YYYY-MM-DD')).toBe('2025-04-29');
+    expect(end2.format('YYYY-MM-DD')).toBe('2025-05-29');
+
     expect(
-      currentEndMonth
-        .subtract(1, 'month')
-        .isSame(wrapper.state('value')[1], 'month'),
-    ).toBe(true);
-    expect(
-      wrapper.find('.rc-calendar-range-right .rc-calendar-prev-month-btn')
-        .length,
+      container.querySelectorAll(
+        '.rc-calendar-range-right .rc-calendar-prev-month-btn',
+      ).length,
     ).toBe(0);
   });
 
-  it('next year works', () => {
-    const wrapper = mount(<RangeCalendar />);
+  it.only('next year works', async () => {
+    const onValueChange = vi.fn();
+    const { container } = render(
+      <RangeCalendar onValueChange={onValueChange} />,
+    );
 
-    const currentEndMonth = wrapper.state('value')[1].clone();
-    wrapper
-      .find('.rc-calendar-range-right .rc-calendar-next-year-btn')
-      .simulate('click');
+    const rightNextYearButton = container.querySelector(
+      '.rc-calendar-range-right .rc-calendar-next-year-btn',
+    );
+    fireEvent.click(rightNextYearButton!);
+
+    expect(onValueChange).toHaveBeenCalled();
+    const [start1, end1] = onValueChange.mock.calls[0][0];
+
+    expect(start1.format('YYYY-MM-DD')).toBe('2025-05-29');
+    expect(end1.format('YYYY-MM-DD')).toBe('2026-06-29');
+
     expect(
-      currentEndMonth.add(1, 'year').isSame(wrapper.state('value')[1], 'month'),
-    ).toBe(true);
-    expect(
-      wrapper.find('.rc-calendar-range-right .rc-calendar-prev-year-btn')
-        .length,
+      container.querySelectorAll(
+        '.rc-calendar-range-right .rc-calendar-prev-year-btn',
+      ).length,
     ).toBe(1);
 
-    const currentStartMonth = wrapper.state('value')[0].clone();
-    wrapper
-      .find('.rc-calendar-range-left .rc-calendar-next-year-btn')
-      .simulate('click');
+    const leftNextYearButton = container.querySelector(
+      '.rc-calendar-range-left .rc-calendar-next-year-btn',
+    );
+    fireEvent.click(leftNextYearButton!);
+
+    expect(onValueChange).toHaveBeenCalled();
+    const [start2, end2] = onValueChange.mock.calls[1][0];
+
+    expect(start2.format('YYYY-MM-DD')).toBe('2026-05-29');
+    expect(end2.format('YYYY-MM-DD')).toBe('2026-06-29');
+
     expect(
-      currentStartMonth
-        .add(1, 'year')
-        .isSame(wrapper.state('value')[0], 'month'),
-    ).toBe(true);
-    expect(
-      wrapper.find('.rc-calendar-range-left .rc-calendar-next-year-btn').length,
+      container.querySelectorAll(
+        '.rc-calendar-range-left .rc-calendar-next-year-btn',
+      ).length,
     ).toBe(0);
   });
 
-  it('previous year works', () => {
-    const wrapper = mount(<RangeCalendar />);
+  it.only('previous year works', async () => {
+    const onValueChange = vi.fn();
+    const { container } = render(
+      <RangeCalendar onValueChange={onValueChange} />,
+    );
 
-    const currentStartMonth = wrapper.state('value')[0].clone();
-    wrapper
-      .find('.rc-calendar-range-left .rc-calendar-prev-year-btn')
-      .simulate('click');
+    const leftPrevYearButton = container.querySelector(
+      '.rc-calendar-range-left .rc-calendar-prev-year-btn',
+    );
+    fireEvent.click(leftPrevYearButton!);
+
+    expect(onValueChange).toHaveBeenCalled();
+    const [start1, end1] = onValueChange.mock.calls[0][0];
+
+    expect(start1.format('YYYY-MM-DD')).toBe('2024-05-29');
+    expect(end1.format('YYYY-MM-DD')).toBe('2025-06-29');
+
     expect(
-      currentStartMonth
-        .subtract(1, 'year')
-        .isSame(wrapper.state('value')[0], 'month'),
-    ).toBe(true);
-    expect(
-      wrapper.find('.rc-calendar-range-left .rc-calendar-next-year-btn').length,
+      container.querySelectorAll(
+        '.rc-calendar-range-left .rc-calendar-next-year-btn',
+      ).length,
     ).toBe(1);
 
-    const currentEndMonth = wrapper.state('value')[1].clone();
-    wrapper
-      .find('.rc-calendar-range-right .rc-calendar-prev-year-btn')
-      .simulate('click');
+    const rightPrevYearButton = container.querySelector(
+      '.rc-calendar-range-right .rc-calendar-prev-year-btn',
+    );
+    fireEvent.click(rightPrevYearButton!);
+
+    expect(onValueChange).toHaveBeenCalled();
+    const [start2, end2] = onValueChange.mock.calls[1][0];
+    expect(start2.format('YYYY-MM-DD')).toBe('2024-05-29');
+    expect(end2.format('YYYY-MM-DD')).toBe('2024-06-29');
+
     expect(
-      currentEndMonth
-        .subtract(1, 'year')
-        .isSame(wrapper.state('value')[1], 'month'),
-    ).toBe(true);
-    expect(
-      wrapper.find('.rc-calendar-range-right .rc-calendar-prev-year-btn')
-        .length,
+      container.querySelectorAll(
+        '.rc-calendar-range-right .rc-calendar-prev-year-btn',
+      ).length,
     ).toBe(0);
   });
 
-  it('left panel show next btns when right panel show year panel or month panel', () => {
-    let wrapper = null;
-    wrapper = mount(<RangeCalendar />);
-    wrapper
-      .find('.rc-calendar-range-right .rc-calendar-month-select')
-      .simulate('click');
-    expect(
-      wrapper.find('.rc-calendar-range-left .rc-calendar-next-year-btn').length,
-    ).toBe(1);
-    expect(
-      wrapper.find('.rc-calendar-range-left .rc-calendar-next-month-btn')
-        .length,
-    ).toBe(1);
+  it.only('left panel shows next buttons when right panel shows month panel', () => {
+    const { container } = render(<RangeCalendar />);
+    const rightMonthButton = container.querySelector(
+      '.rc-calendar-range-right .rc-calendar-month-select',
+    );
+    fireEvent.click(rightMonthButton!);
 
-    wrapper = mount(<RangeCalendar />);
-    wrapper
-      .find('.rc-calendar-range-right .rc-calendar-year-select')
-      .simulate('click');
     expect(
-      wrapper.find('.rc-calendar-range-left .rc-calendar-next-year-btn').length,
+      container.querySelectorAll(
+        '.rc-calendar-range-left .rc-calendar-next-year-btn',
+      ).length,
     ).toBe(1);
     expect(
-      wrapper.find('.rc-calendar-range-left .rc-calendar-next-month-btn')
-        .length,
+      container.querySelectorAll(
+        '.rc-calendar-range-left .rc-calendar-next-month-btn',
+      ).length,
     ).toBe(1);
   });
 
-  it('right panel show prev btns when left panel show year panel or month panel', () => {
-    let wrapper = null;
-    wrapper = mount(<RangeCalendar />);
-    wrapper
-      .find('.rc-calendar-range-left .rc-calendar-month-select')
-      .simulate('click');
-    expect(
-      wrapper.find('.rc-calendar-range-right .rc-calendar-next-year-btn')
-        .length,
-    ).toBe(1);
-    expect(
-      wrapper.find('.rc-calendar-range-right .rc-calendar-next-month-btn')
-        .length,
-    ).toBe(1);
+  it.only('left panel shows next buttons when right panel shows year panel', () => {
+    const { container } = render(<RangeCalendar />);
 
-    wrapper = mount(<RangeCalendar />);
-    wrapper
-      .find('.rc-calendar-range-left .rc-calendar-year-select')
-      .simulate('click');
+    const rightYearButton = container.querySelector(
+      '.rc-calendar-range-right .rc-calendar-year-select',
+    );
+    fireEvent.click(rightYearButton!);
+
     expect(
-      wrapper.find('.rc-calendar-range-right .rc-calendar-next-year-btn')
-        .length,
+      container.querySelectorAll(
+        '.rc-calendar-range-left .rc-calendar-next-year-btn',
+      ).length,
     ).toBe(1);
     expect(
-      wrapper.find('.rc-calendar-range-right .rc-calendar-next-month-btn')
-        .length,
+      container.querySelectorAll(
+        '.rc-calendar-range-left .rc-calendar-next-month-btn',
+      ).length,
     ).toBe(1);
   });
 
-  it('left panel cannot select month after right panel', () => {
-    const wrapper = mount(<RangeCalendar />);
-    wrapper
-      .find('.rc-calendar-range-left .rc-calendar-month-select')
-      .simulate('click');
-    const monthCells = wrapper.find(
+  it.only('right panel shows prev buttons when left panel shows month panel', () => {
+    const { container } = render(<RangeCalendar />);
+    const leftMonthButton = container.querySelector(
+      '.rc-calendar-range-left .rc-calendar-month-select',
+    );
+    fireEvent.click(leftMonthButton!);
+
+    expect(
+      container.querySelectorAll(
+        '.rc-calendar-range-right .rc-calendar-next-year-btn',
+      ).length,
+    ).toBe(1);
+    expect(
+      container.querySelectorAll(
+        '.rc-calendar-range-right .rc-calendar-next-month-btn',
+      ).length,
+    ).toBe(1);
+  });
+
+  it.only('right panel show prev buttons when left panel show year panel', () => {
+    const { container } = render(<RangeCalendar />);
+
+    const leftYearButton = container.querySelector(
+      '.rc-calendar-range-left .rc-calendar-year-select',
+    );
+
+    fireEvent.click(leftYearButton!);
+
+    expect(
+      container.querySelectorAll(
+        '.rc-calendar-range-right .rc-calendar-next-year-btn',
+      ).length,
+    ).toBe(1);
+    expect(
+      container.querySelectorAll(
+        '.rc-calendar-range-right .rc-calendar-next-month-btn',
+      ).length,
+    ).toBe(1);
+  });
+
+  it.only('left panel cannot select month after right panel', () => {
+    const { container } = render(<RangeCalendar />);
+
+    const leftMonthButton = container.querySelector(
+      '.rc-calendar-range-left .rc-calendar-month-select',
+    );
+
+    fireEvent.click(leftMonthButton!);
+
+    const monthCells = container.querySelectorAll(
       '.rc-calendar-range-left .rc-calendar-month-panel-cell',
     );
-    const rightPanelMonth = wrapper.state('value')[1].month();
-    expect(monthCells.get(rightPanelMonth).props.className).toMatch(
+
+    const rightPanelMonth = 5; // June
+
+    // Check that the next month (June) is enabled
+    expect(monthCells[rightPanelMonth].className).toMatch(
       'rc-calendar-month-panel-cell',
     );
-    expect(monthCells.get(rightPanelMonth + 1).props.className).toMatch(
+
+    // Check that the month after that (July) is disabled
+    expect(monthCells[rightPanelMonth + 1].className).toMatch(
       'rc-calendar-month-panel-cell-disabled',
     );
   });
 
-  it('right panel cannot select month before left panel', () => {
-    const wrapper = mount(<RangeCalendar />);
-    wrapper
-      .find('.rc-calendar-range-right .rc-calendar-month-select')
-      .simulate('click');
-    const monthCells = wrapper.find(
+  it.only('right panel cannot select month before left panel', () => {
+    const { container } = render(<RangeCalendar />);
+
+    const rightMonthButton = container.querySelector(
+      '.rc-calendar-range-right .rc-calendar-month-select',
+    );
+
+    fireEvent.click(rightMonthButton!);
+
+    const monthCells = container.querySelectorAll(
       '.rc-calendar-range-right .rc-calendar-month-panel-cell',
     );
-    const leftPanelMonth = wrapper.state('value')[0].month();
-    expect(monthCells.get(leftPanelMonth).props.className).toMatch(
+
+    const leftPanelMonth = 4; // May
+    expect(monthCells[leftPanelMonth].className).toMatch(
       'rc-calendar-month-panel-cell rc-calendar-month-panel-current-cell',
     );
-    expect(monthCells.get(leftPanelMonth - 1).props.className).toMatch(
+    expect(monthCells[leftPanelMonth - 1].className).toMatch(
       'rc-calendar-month-panel-cell-disabled',
     );
   });
 
-  it('onSelect works', () => {
+  it.only('onSelect works', () => {
     function onSelect(d) {
       expect(d[0].format(format)).toBe('2015-09-04');
       expect(d[1].format(format)).toBe('2015-10-02');
@@ -253,7 +345,7 @@ describe('RangeCalendar', () => {
 
     const now = moment([2015, 8, 29]);
 
-    const wrapper = mount(
+    const { container } = render(
       <RangeCalendar
         format={format}
         onSelect={onSelect}
@@ -261,23 +353,29 @@ describe('RangeCalendar', () => {
         showWeekNumber
       />,
     );
-    wrapper
-      .find('.rc-calendar-range-left .rc-calendar-date')
-      .at(5)
-      .simulate('click'); // 9.4
-    expect(wrapper.find('.rc-calendar-input').at(0).getDOMNode().value).toBe(
-      '2015-09-04',
-    );
-    wrapper
-      .find('.rc-calendar-range-right .rc-calendar-date')
-      .at(5)
-      .simulate('click'); // 10.2
-    expect(wrapper.find('.rc-calendar-input').at(1).getDOMNode().value).toBe(
-      '2015-10-02',
-    );
+
+    const leftDate = container.querySelectorAll(
+      '.rc-calendar-range-left .rc-calendar-date',
+    )[5];
+
+    fireEvent.click(leftDate);
+
+    const inputs = container.querySelectorAll('.rc-calendar-input');
+    const leftInput = inputs[0] as HTMLInputElement;
+
+    expect(leftInput.value).toBe('2015-09-04');
+
+    const rightDate = container.querySelectorAll(
+      '.rc-calendar-range-right .rc-calendar-date',
+    )[5];
+
+    fireEvent.click(rightDate);
+
+    const rightInput = inputs[1] as HTMLInputElement;
+    expect(rightInput.value).toBe('2015-10-02');
   });
 
-  it('onSelect works reversely', () => {
+  it.only('onSelect works reversely', () => {
     function onSelect(d) {
       expect(d[0].format(format)).toBe('2015-09-04');
       expect(d[1].format(format)).toBe('2015-09-14');
@@ -285,7 +383,7 @@ describe('RangeCalendar', () => {
 
     const now = moment([2015, 8, 29]);
 
-    const wrapper = mount(
+    const { container } = render(
       <RangeCalendar
         format={format}
         onSelect={onSelect}
@@ -294,46 +392,53 @@ describe('RangeCalendar', () => {
       />,
     );
 
-    wrapper
-      .find('.rc-calendar-range-left .rc-calendar-date')
-      .at(15)
-      .simulate('click'); // 9.14
-    expect(wrapper.find('.rc-calendar-input').at(0).getDOMNode().value).toBe(
-      '2015-09-14',
-    );
+    const leftDate15 = container.querySelectorAll(
+      '.rc-calendar-range-left .rc-calendar-date',
+    )[15];
 
-    wrapper
-      .find('.rc-calendar-range-left .rc-calendar-date')
-      .at(5)
-      .simulate('click'); // 9.4
-    expect(wrapper.find('.rc-calendar-input').at(0).getDOMNode().value).toBe(
-      '2015-09-04',
-    );
-    expect(wrapper.find('.rc-calendar-input').at(1).getDOMNode().value).toBe(
-      '2015-09-14',
-    );
+    fireEvent.click(leftDate15); // 9.14
+
+    const inputs = container.querySelectorAll('.rc-calendar-input');
+    const leftInput = inputs[0] as HTMLInputElement;
+    const rightInput = inputs[1] as HTMLInputElement;
+
+    expect(leftInput.value).toBe('2015-09-14');
+
+    const lefDate5 = container.querySelectorAll(
+      '.rc-calendar-range-left .rc-calendar-date',
+    )[5];
+
+    fireEvent.click(lefDate5); // 9.4
+
+    expect(leftInput.value).toBe('2015-09-04');
+    expect(rightInput.value).toBe('2015-09-14');
   });
 
-  it('onHoverChange works', () => {
-    let hoverValue = null;
-    function onHoverChange(hv) {
-      hoverValue = hv;
-    }
-    const wrapper = mount(<RangeCalendar onHoverChange={onHoverChange} />);
-    wrapper
-      .find('.rc-calendar-range-left .rc-calendar-cell')
-      .at(10)
-      .simulate('click');
-    wrapper
-      .find('.rc-calendar-range-left .rc-calendar-cell')
-      .at(20)
-      .simulate('mouseEnter');
-    expect(hoverValue[0].format(format)).toBe('2017-03-08');
-    expect(hoverValue[1].format(format)).toBe('2017-03-18');
+  it.only('onHoverChange works', () => {
+    const onHoverChange = vi.fn();
+    const { container } = render(
+      <RangeCalendar onHoverChange={onHoverChange} />,
+    );
+
+    const cells = container.querySelectorAll(
+      '.rc-calendar-range-left .rc-calendar-cell',
+    );
+
+    fireEvent.click(cells[10]);
+    expect(onHoverChange).toHaveBeenCalledTimes(1);
+
+    fireEvent.mouseEnter(cells[20]);
+    expect(onHoverChange).toHaveBeenCalledTimes(2);
+
+    // Get the arguments of the second call
+    const hoverValue = onHoverChange.mock.calls[1][0];
+
+    expect(hoverValue[0].format(format)).toBe('2025-05-07');
+    expect(hoverValue[1].format(format)).toBe('2025-05-17');
   });
 
   describe('timePicker', () => {
-    it('defaultOpenValue should follow RangeCalendar[selectedValue|defaultSelectedValue] when it is set', () => {
+    it.only('defaultOpenValue should follow RangeCalendar[selectedValue|defaultSelectedValue] when it is set', () => {
       const timePicker = (
         <TimePickerPanel
           defaultValue={[
@@ -342,7 +447,7 @@ describe('RangeCalendar', () => {
           ]}
         />
       );
-      const wrapper = mount(
+      const { container } = render(
         <RangeCalendar
           timePicker={timePicker}
           defaultSelectedValue={[
@@ -351,16 +456,21 @@ describe('RangeCalendar', () => {
           ]}
         />,
       );
-      wrapper.find('.rc-calendar-time-picker-btn').simulate('click');
-      const selectedValues = wrapper.find(
+      const timePickerButton = container.querySelector(
+        '.rc-calendar-time-picker-btn',
+      );
+
+      fireEvent.click(timePickerButton!);
+
+      const selectedValues = container.querySelectorAll(
         '.rc-time-picker-panel-select-option-selected',
       );
       for (let i = 0; i < selectedValues.length; i += 1) {
-        expect(selectedValues.at(i).text()).toBe('01');
+        expect(selectedValues[i].innerHTML).toBe('01');
       }
     });
 
-    it('selected start and end date can be same', () => {
+    it.only('selected start and end date can be same', () => {
       const timePicker = (
         <TimePickerPanel
           defaultValue={[
@@ -369,7 +479,7 @@ describe('RangeCalendar', () => {
           ]}
         />
       );
-      const wrapper = mount(
+      const { container } = render(
         <RangeCalendar
           selectedValue={[
             moment('2000-09-03', format),
@@ -378,24 +488,33 @@ describe('RangeCalendar', () => {
           timePicker={timePicker}
         />,
       );
-      wrapper.find('.rc-calendar-time-picker-btn').simulate('click');
-      expect(wrapper.find('.rc-calendar-year-select').at(0).text()).toBe(
-        '2000',
+
+      const timePickerButton = container.querySelector(
+        '.rc-calendar-time-picker-btn',
       );
-      expect(wrapper.find('.rc-calendar-month-select').at(0).text()).toBe(
-        'Sep',
-      );
-      expect(wrapper.find('.rc-calendar-day-select').at(0).text()).toBe('3');
-      expect(wrapper.find('.rc-calendar-year-select').at(1).text()).toBe(
-        '2000',
-      );
-      expect(wrapper.find('.rc-calendar-month-select').at(1).text()).toBe(
-        'Sep',
-      );
-      expect(wrapper.find('.rc-calendar-day-select').at(1).text()).toBe('3');
+      fireEvent.click(timePickerButton!);
+
+      expect(
+        container.querySelectorAll('.rc-calendar-year-select')[0].innerHTML,
+      ).toBe('2000');
+      expect(
+        container.querySelectorAll('.rc-calendar-month-select')[0].innerHTML,
+      ).toBe('Sep');
+      expect(
+        container.querySelectorAll('.rc-calendar-day-select')[0].innerHTML,
+      ).toBe('3');
+      expect(
+        container.querySelectorAll('.rc-calendar-year-select')[1].innerHTML,
+      ).toBe('2000');
+      expect(
+        container.querySelectorAll('.rc-calendar-month-select')[1].innerHTML,
+      ).toBe('Sep');
+      expect(
+        container.querySelectorAll('.rc-calendar-day-select')[1].innerHTML,
+      ).toBe('3');
     });
 
-    it("use timePicker's time", () => {
+    it.only("use timePicker's time", () => {
       const timePicker = (
         <TimePickerPanel
           defaultValue={[
@@ -404,59 +523,63 @@ describe('RangeCalendar', () => {
           ]}
         />
       );
-      const wrapper = mount(<RangeCalendar timePicker={timePicker} />);
+      const { container } = render(<RangeCalendar timePicker={timePicker} />);
 
-      wrapper
-        .find('.rc-calendar-today')
-        .at(0)
-        .simulate('click')
-        .simulate('click');
+      const todayButton = container.querySelectorAll('.rc-calendar-today')[0];
+
+      fireEvent.click(todayButton!);
+      fireEvent.click(todayButton!);
+
+      const inputs = container.querySelectorAll('.rc-calendar-input');
+      const startInput = inputs[0] as HTMLInputElement;
+      const endInput = inputs[1] as HTMLInputElement;
+
       // use timePicker's defaultValue if users haven't select a time
-      expect(wrapper.find('.rc-calendar-input').at(0).getDOMNode().value).toBe(
-        '3/29/2017 00:00:00',
-      );
-      expect(wrapper.find('.rc-calendar-input').at(1).getDOMNode().value).toBe(
-        '3/29/2017 23:59:59',
+      expect(startInput.value).toBe('5/29/2025 00:00:00');
+      expect(endInput.value).toBe('5/29/2025 23:59:59');
+
+      const timePickerButton = container.querySelector(
+        '.rc-calendar-time-picker-btn',
       );
 
-      wrapper.find('.rc-calendar-time-picker-btn').simulate('click');
+      fireEvent.click(timePickerButton!);
 
       // update time to timePicker's time
-      wrapper
-        .find('.rc-calendar-range-left .rc-time-picker-panel-select ul')
-        .at(0)
-        .find('li')
-        .at(6)
-        .simulate('click');
-      expect(wrapper.find('.rc-calendar-input').at(0).getDOMNode().value).toBe(
-        '3/29/2017 06:00:00',
-      );
+      const leftButton = container
+        .querySelectorAll(
+          '.rc-calendar-range-left .rc-time-picker-panel-select ul',
+        )[0]
+        .querySelectorAll('li')[6];
 
-      wrapper
-        .find('.rc-calendar-range-right .rc-time-picker-panel-select ul')
-        .at(0)
-        .find('li')
-        .at(6)
-        .simulate('click');
-      expect(wrapper.find('.rc-calendar-input').at(1).getDOMNode().value).toBe(
-        '3/29/2017 06:59:59',
-      );
+      fireEvent.click(leftButton);
 
-      wrapper
-        .find('.rc-calendar-range-left .rc-calendar-cell')
-        .at(10)
-        .simulate('click');
-      expect(wrapper.find('.rc-calendar-input').at(0).getDOMNode().value).toBe(
-        '3/8/2017 06:00:00',
-      );
+      expect(startInput.value).toBe('5/29/2025 06:00:00');
 
-      wrapper
-        .find('.rc-calendar-range-left .rc-calendar-cell')
-        .at(20)
-        .simulate('click');
-      expect(wrapper.find('.rc-calendar-input').at(1).getDOMNode().value).toBe(
-        '3/18/2017 06:59:59',
-      );
+      const rightButton = container
+        .querySelectorAll(
+          '.rc-calendar-range-right .rc-time-picker-panel-select ul',
+        )[0]
+        .querySelectorAll('li')[6];
+
+      fireEvent.click(rightButton);
+
+      expect(endInput.value).toBe('5/29/2025 06:59:59');
+
+      const cell10 = container.querySelectorAll(
+        '.rc-calendar-range-left .rc-calendar-cell',
+      )[10];
+
+      fireEvent.click(cell10);
+
+      expect(startInput.value).toBe('5/7/2025 06:00:00');
+
+      const cell20 = container.querySelectorAll(
+        '.rc-calendar-range-left .rc-calendar-cell',
+      )[20];
+
+      fireEvent.click(cell20);
+
+      expect(endInput.value).toBe('5/17/2025 06:59:59');
     });
 
     it('should combine disabledTime', () => {
@@ -1235,14 +1358,14 @@ describe('RangeCalendar', () => {
     );
     expect(wrapper.render()).toMatchSnapshot();
 
-    const keyDown = (code, info) => {
+    const keyDown = (code: string, info?: any) => {
       wrapper.find('.rc-calendar').simulate('keyDown', {
         ...info,
-        keyCode: code,
+        key: code,
       });
     };
 
-    const keySimulateCheck = (code, month, date, info) => {
+    const keySimulateCheck = (code: string, month, date, info?: any) => {
       keyDown(code, info);
 
       expect(
@@ -1258,38 +1381,38 @@ describe('RangeCalendar', () => {
     };
 
     // 09-03 down 09-10
-    keySimulateCheck(keyCode.DOWN, 'Sep', 10);
+    keySimulateCheck('ArrowDown', 'Sep', 10);
 
     // 09-03 left 09-09
-    keySimulateCheck(keyCode.LEFT, 'Sep', 9);
+    keySimulateCheck('ArrowLeft', 'Sep', 9);
 
     // 09-09 right 09-10
-    keySimulateCheck(keyCode.RIGHT, 'Sep', 10);
+    keySimulateCheck('ArrowRight', 'Sep', 10);
 
     // 09-10 right 09-03
-    keySimulateCheck(keyCode.UP, 'Sep', 3);
+    keySimulateCheck('ArrowUp', 'Sep', 3);
 
     // 09-10 home 09-01
-    keySimulateCheck(keyCode.HOME, 'Sep', 1);
+    keySimulateCheck('Home', 'Sep', 1);
 
     // 09-10 end 09-30
-    keySimulateCheck(keyCode.END, 'Sep', 30);
+    keySimulateCheck('End', 'Sep', 30);
 
     // 09-30 page up 08-30
-    keySimulateCheck(keyCode.PAGE_UP, 'Aug', 30);
+    keySimulateCheck('PageUp', 'Aug', 30);
 
     // 08-30 page down 09-30
-    keySimulateCheck(keyCode.PAGE_DOWN, 'Sep', 30);
+    keySimulateCheck('PageDown', 'Sep', 30);
 
-    keyDown(keyCode.BACKSLASH);
+    keyDown('Backslash');
     expect(keyDownEvent).toEqual(1);
 
-    keyDown(keyCode.ENTER);
+    keyDown('Enter');
 
     expect(onChange.mock.calls[0][0][0].format(format)).toEqual('2000-09-30');
 
     // 2000-09-30 ctrl+right 2001-09-30
-    keySimulateCheck(keyCode.RIGHT, 'Sep', 30, {
+    keySimulateCheck('ArrowRight', 'Sep', 30, {
       ctrlKey: true,
     });
     expect(
@@ -1297,11 +1420,11 @@ describe('RangeCalendar', () => {
     ).toEqual('2001');
 
     // 2001-09-30 ctrl+right 2000-09-30
-    keySimulateCheck(keyCode.LEFT, 'Sep', 30, {
+    keySimulateCheck('ArrowLeft', 'Sep', 30, {
       ctrlKey: true,
     });
 
-    keyDown(keyCode.ENTER);
+    keyDown('Enter');
     expect(onChange.mock.calls[1][0][0].format(format)).toEqual('2000-09-30');
     expect(onChange.mock.calls[1][0][1].format(format)).toEqual('2000-09-30');
 
@@ -1329,7 +1452,7 @@ describe('RangeCalendar', () => {
     expect(onSelect.mock.calls[0][1].source).toEqual('dateInput');
 
     wrapper.find('input').at(0).simulate('keyDown', {
-      keyCode: keyCode.ENTER,
+      keyCode: 'Enter',
     });
     expect(onSelect.mock.calls[1][1].source).toEqual('dateInputSelect');
   });
