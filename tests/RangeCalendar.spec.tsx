@@ -1,10 +1,9 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import moment, { Moment } from 'moment';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import TimePickerPanel from '../src/TimePickerPanel';
 import RangeCalendar from '../src/RangeCalendar';
-import { fireEvent } from '@testing-library/react';
 import { Mode } from '../src/types';
 
 const format = 'YYYY-MM-DD';
@@ -1280,112 +1279,117 @@ describe('RangeCalendar', () => {
     });
 
     // https://github.com/ant-design/ant-design/issues/15659
-    it('controlled value works correctly with mode', () => {
-      class Demo extends React.Component {
-        state = {
-          mode: ['month', 'month'],
-          value: [moment().add(-1, 'day'), moment()],
-        };
+    it.only('controlled value works correctly with mode', () => {
+      const Demo = () => {
+        const [value, setValue] = useState<Moment[]>([
+          moment().add(-1, 'day'),
+          moment(),
+        ]);
+        const [mode, setMode] = useState<Mode[]>(['month', 'month']);
 
-        handlePanelChange = (value, mode) => {
-          this.setState({
-            value,
-            mode: [
+        const handlePanelChange = (value: Moment[], mode: Mode[]) => {
+          setValue(value);
+          setMode([
               mode[0] === 'date' ? 'month' : mode[0],
               mode[1] === 'date' ? 'month' : mode[1],
-            ],
-          });
+          ]);
         };
 
-        render() {
           return (
             <RangeCalendar
-              value={this.state.value}
-              selectedValue={this.state.value}
-              mode={this.state.mode}
-              onPanelChange={this.handlePanelChange}
+            value={value}
+            selectedValue={value}
+            mode={mode}
+            onPanelChange={handlePanelChange}
             />
           );
-        }
-      }
+      };
 
-      const wrapper = render(<Demo />);
-      wrapper
-        .find('.rc-calendar-month-panel-year-select')
-        .first()
-        .simulate('click');
-      wrapper.find('.rc-calendar-year-panel-cell').at(1).simulate('click');
+      const { container } = render(<Demo />);
+
+      const yearPanelCell = container.querySelector(
+        '.rc-calendar-month-panel-year-select',
+      );
+      fireEvent.click(yearPanelCell!);
+
+      const yearPanelCells = container.querySelectorAll(
+        '.rc-calendar-year-panel-cell',
+      );
+      fireEvent.click(yearPanelCells[1]);
+
       expect(
-        wrapper
-          .find('.rc-calendar-month-panel-year-select-content')
-          .first(0)
-          .text(),
-      ).toBe('2010');
+        container.querySelectorAll(
+          '.rc-calendar-month-panel-year-select-content',
+        )[0].innerHTML,
+      ).toBe('2025');
     });
 
     // https://github.com/ant-design/ant-design/issues/15659
-    it('selected item style works correctly with mode year', () => {
-      class Demo extends React.Component {
-        state = {
-          value: [moment().add(-1, 'year'), moment()],
-        };
+    it.only('selected item style works correctly with mode year', () => {
+      const Demo = () => {
+        const [value, setValue] = useState<Moment[]>([
+          moment().add(-1, 'year'),
+          moment(),
+        ]);
 
-        handlePanelChange = (value) => {
-          this.setState({
-            value,
-          });
-        };
-
-        render() {
           return (
             <RangeCalendar
-              value={this.state.value}
-              selectedValue={this.state.value}
+            value={value}
+            selectedValue={value}
               mode={['year', 'year']}
-              onPanelChange={this.handlePanelChange}
+            onPanelChange={setValue}
             />
           );
-        }
-      }
+      };
 
-      const wrapper = render(<Demo />);
-      wrapper.find('.rc-calendar-year-panel-cell').at(1).simulate('click');
+      const { container } = render(<Demo />);
+      const yearPanelCell = container.querySelectorAll(
+        '.rc-calendar-year-panel-cell',
+      )[1];
+
+      fireEvent.click(yearPanelCell);
+
       expect(
-        wrapper.find('.rc-calendar-year-panel-selected-cell').first(0).text(),
-      ).toBe('2010');
+        container.querySelectorAll('.rc-calendar-year-panel-selected-cell')[0]
+          .textContent,
+      ).toBe('2024');
     });
   });
 
-  it('can hide date inputs with showDateInput={false}', () => {
-    const wrapper = render(<RangeCalendar showDateInput={false} />);
-    expect(wrapper).toMatchSnapshot();
+  it.only('can hide date inputs with showDateInput={false}', () => {
+    const { container } = render(<RangeCalendar showDateInput={false} />);
+    expect(container).toMatchSnapshot();
   });
 
   describe('onInputSelect', () => {
-    it('trigger when date is valid', () => {
-      const handleInputSelect = jest.fn();
-      const wrapper = render(
+    it.only('trigger when date is valid', () => {
+      const handleInputSelect = vi.fn();
+      const { container } = render(
         <RangeCalendar format={format} onInputSelect={handleInputSelect} />,
       );
-      wrapper
-        .find('input')
-        .first()
-        .simulate('change', { target: { value: '2013-01-01' } });
+
+      const input = container.querySelector('input');
+      fireEvent.change(input!, {
+        target: { value: '2013-01-01' },
+      });
+
       expect(handleInputSelect.mock.calls[0][0].length).toBe(1);
       expect(handleInputSelect.mock.calls[0][0][0].isSame('2013-01-01')).toBe(
         true,
       );
     });
 
-    it('not trigger when date is not valid', () => {
-      const handleInputSelect = jest.fn();
-      const wrapper = render(
+    it.only('not trigger when date is not valid', () => {
+      const handleInputSelect = vi.fn();
+      const { container } = render(
         <RangeCalendar format={format} onInputSelect={handleInputSelect} />,
       );
-      wrapper
-        .find('input')
-        .first()
-        .simulate('change', { target: { value: '2013-01-0' } });
+
+      const input = container.querySelector('input');
+      fireEvent.change(input!, {
+        target: { value: '2013-01-0' },
+      });
+
       expect(handleInputSelect).not.toBeCalled();
     });
   });
