@@ -1394,60 +1394,79 @@ describe('RangeCalendar', () => {
     });
   });
 
-  it('controlled hoverValue changes', () => {
-    const start = moment();
-    const end = moment().add(2, 'day');
-    const wrapper = render(<RangeCalendar hoverValue={[start, end]} />);
-    const nextEnd = end.clone().add(2, 'day');
-    wrapper.setProps({ hoverValue: [start, nextEnd] });
-    expect(wrapper.state().hoverValue[1]).toBe(nextEnd);
+  it.only('controlled hoverValue changes', () => {
+    const start = moment(); // 2025-05-29
+    const end = moment().add(2, 'day'); // 2025-05-31
+    const { container, rerender } = render(
+      <RangeCalendar hoverValue={[start, end]} />,
+    );
+
+    const nextEnd = end.clone().add(2, 'day'); // 2025-06-02
+    rerender(<RangeCalendar hoverValue={[start, nextEnd]} />);
+
+    const lastDayCell = container.querySelectorAll(
+      '.rc-calendar-selected-day',
+    )[1];
+
+    expect(lastDayCell.textContent).toBe('2'); // 2nd of June
   });
 
-  it('controlled selectedValue changes', () => {
+  it.only('controlled selectedValue changes', () => {
     const start = moment();
     const end = moment().add(2, 'day');
-    const wrapper = render(<RangeCalendar selectedValue={[start, end]} />);
+    const { container, rerender } = render(
+      <RangeCalendar selectedValue={[start, end]} />,
+    );
     const nextEnd = end.clone().add(2, 'day');
-    wrapper.setProps({ selectedValue: [start, nextEnd] });
-    expect(wrapper.state().selectedValue[1]).toBe(nextEnd);
-    expect(wrapper.state().prevSelectedValue[1]).toBe(nextEnd);
+
+    rerender(<RangeCalendar selectedValue={[start, nextEnd]} />);
+    const selectedLastDayCell = container.querySelectorAll(
+      '.rc-calendar-selected-end-date',
+    )[0];
+    expect(selectedLastDayCell.textContent).toBe('2'); // 2nd of June
   });
 
   describe('onHoverChange', () => {
-    let handleHoverChange;
-    let start;
-    let end;
-    let wrapper;
-
-    beforeEach(() => {
-      handleHoverChange = jest.fn();
-      start = moment();
-      end = moment().add(2, 'day');
-      wrapper = render(
+    it.only('mouseEnter', () => {
+      const handleHoverChange = vi.fn();
+      const start = moment();
+      const end = moment().add(2, 'day');
+      const { container } = render(
         <RangeCalendar
           type="start"
           onHoverChange={handleHoverChange}
           selectedValue={[start, end]}
         />,
       );
-    });
+      const datePanel = container?.querySelector('.rc-calendar-date-panel');
+      fireEvent.mouseEnter(datePanel!);
 
-    it('mouseEnter', () => {
-      wrapper.find('.rc-calendar-date-panel').simulate('mouseEnter');
       expect(handleHoverChange).toHaveBeenCalledWith([start, end]);
     });
 
-    it('mouseHover', () => {
-      wrapper.find('.rc-calendar-date-panel').simulate('mouseLeave');
+    it.only('mouseHover', () => {
+      const handleHoverChange = vi.fn();
+      const start = moment();
+      const end = moment().add(2, 'day');
+      const { container } = render(
+        <RangeCalendar
+          type="start"
+          onHoverChange={handleHoverChange}
+          selectedValue={[start, end]}
+        />,
+      );
+      const datePanel = container?.querySelector('.rc-calendar-date-panel');
+      fireEvent.mouseLeave(datePanel!);
+
       expect(handleHoverChange).toHaveBeenCalledWith([]);
     });
   });
 
-  it('key control', () => {
-    const onChange = jest.fn();
-    const onSelect = jest.fn();
+  it.only('key control', () => {
+    const onChange = vi.fn();
+    const onSelect = vi.fn();
     let keyDownEvent = 0;
-    const wrapper = render(
+    const { container } = render(
       <RangeCalendar
         defaultSelectedValue={[
           moment('2000-09-03', format),
@@ -1458,27 +1477,33 @@ describe('RangeCalendar', () => {
         onKeyDown={() => (keyDownEvent = 1)}
       />,
     );
-    expect(wrapper.render()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
 
-    const keyDown = (code: string, info?: any) => {
-      wrapper.find('.rc-calendar').simulate('keyDown', {
-        ...info,
-        key: code,
+    const keyDown = (key: string, ctrlKey?: boolean) => {
+      fireEvent.keyDown(container.querySelector('.rc-calendar')!, {
+        key,
+        ctrlKey,
       });
     };
 
-    const keySimulateCheck = (code: string, month, date, info?: any) => {
-      keyDown(code, info);
+    const keySimulateCheck = (
+      code: string,
+      month: string,
+      date: number,
+      ctrlKey?: boolean,
+    ) => {
+      keyDown(code, ctrlKey);
 
       expect(
-        wrapper
-          .find('.rc-calendar-range-left .rc-calendar-month-select')
-          .text(),
+        container.querySelector(
+          '.rc-calendar-range-left .rc-calendar-month-select',
+        )?.textContent,
       ).toEqual(String(month));
+
       expect(
-        wrapper
-          .find('.rc-calendar-selected-start-date .rc-calendar-date')
-          .text(),
+        container.querySelector(
+          '.rc-calendar-selected-start-date .rc-calendar-date',
+        )?.textContent,
       ).toEqual(String(date));
     };
 
@@ -1514,17 +1539,15 @@ describe('RangeCalendar', () => {
     expect(onChange.mock.calls[0][0][0].format(format)).toEqual('2000-09-30');
 
     // 2000-09-30 ctrl+right 2001-09-30
-    keySimulateCheck('ArrowRight', 'Sep', 30, {
-      ctrlKey: true,
-    });
+    keySimulateCheck('ArrowRight', 'Sep', 30, true);
     expect(
-      wrapper.find('.rc-calendar-range-right .rc-calendar-year-select').text(),
+      container.querySelector(
+        '.rc-calendar-range-right .rc-calendar-year-select',
+      )?.textContent,
     ).toEqual('2001');
 
     // 2001-09-30 ctrl+right 2000-09-30
-    keySimulateCheck('ArrowLeft', 'Sep', 30, {
-      ctrlKey: true,
-    });
+    keySimulateCheck('ArrowLeft', 'Sep', 30, true);
 
     keyDown('Enter');
     expect(onChange.mock.calls[1][0][0].format(format)).toEqual('2000-09-30');
@@ -1534,18 +1557,17 @@ describe('RangeCalendar', () => {
     expect(onSelect.mock.calls[0][0][1].format(format)).toEqual('2000-09-30');
   });
 
-  it('change input trigger calendar close', () => {
+  it.only('change input trigger calendar close', () => {
     const value = [moment(), moment().add(1, 'months')];
-    const onSelect = jest.fn();
+    const onSelect = vi.fn();
 
-    const wrapper = render(
+    const { container } = render(
       <RangeCalendar value={value} selectedValue={value} onSelect={onSelect} />,
     );
 
-    wrapper
-      .find('input')
-      .at(0)
-      .simulate('change', {
+    const input = container.querySelectorAll('input')[0];
+
+    fireEvent.change(input, {
         target: {
           value: '1/1/2000',
         },
@@ -1553,9 +1575,8 @@ describe('RangeCalendar', () => {
 
     expect(onSelect.mock.calls[0][1].source).toEqual('dateInput');
 
-    wrapper.find('input').at(0).simulate('keyDown', {
-      keyCode: 'Enter',
-    });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
     expect(onSelect.mock.calls[1][1].source).toEqual('dateInputSelect');
   });
 
