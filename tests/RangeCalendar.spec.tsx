@@ -18,7 +18,7 @@ describe('RangeCalendar', () => {
     vi.useRealTimers();
   });
 
-  it.only('render works', () => {
+  it('render works', () => {
     const { container } = render(<RangeCalendar />);
 
     expect(
@@ -26,28 +26,28 @@ describe('RangeCalendar', () => {
     ).toBeGreaterThan(0);
   });
 
-  it.only('default sperator', () => {
+  it('default sperator', () => {
     const { container } = render(<RangeCalendar />);
     expect(
       container.querySelector('.rc-calendar-range-middle')?.textContent,
     ).toBe('~');
   });
 
-  it.only('custom sperator', () => {
+  it('custom sperator', () => {
     const { container } = render(<RangeCalendar seperator="至" />);
     expect(
       container.querySelector('.rc-calendar-range-middle')?.textContent,
     ).toBe('至');
   });
 
-  it.only('render hoverValue correctly', () => {
+  it('render hoverValue correctly', () => {
     const { container } = render(
       <RangeCalendar hoverValue={[moment(), moment().add(1, 'months')]} />,
     );
     expect(container).toMatchSnapshot();
   });
 
-  it.only('next month works', async () => {
+  it('next month works', async () => {
     const onValueChange = vi.fn();
     const { container } = render(
       <RangeCalendar onValueChange={onValueChange} />,
@@ -89,7 +89,7 @@ describe('RangeCalendar', () => {
     ).toBe(0);
   });
 
-  it.only('previous month works', async () => {
+  it('previous month works', async () => {
     const onValueChange = vi.fn();
     const { container } = render(
       <RangeCalendar onValueChange={onValueChange} />,
@@ -129,7 +129,7 @@ describe('RangeCalendar', () => {
     ).toBe(0);
   });
 
-  it.only('next year works', async () => {
+  it('next year works', async () => {
     const onValueChange = vi.fn();
     const { container } = render(
       <RangeCalendar onValueChange={onValueChange} />,
@@ -170,7 +170,7 @@ describe('RangeCalendar', () => {
     ).toBe(0);
   });
 
-  it.only('previous year works', async () => {
+  it('previous year works', async () => {
     const onValueChange = vi.fn();
     const { container } = render(
       <RangeCalendar onValueChange={onValueChange} />,
@@ -210,7 +210,7 @@ describe('RangeCalendar', () => {
     ).toBe(0);
   });
 
-  it.only('left panel shows next buttons when right panel shows month panel', () => {
+  it('left panel shows next buttons when right panel shows month panel', () => {
     const { container } = render(<RangeCalendar />);
     const rightMonthButton = container.querySelector(
       '.rc-calendar-range-right .rc-calendar-month-select',
@@ -229,7 +229,7 @@ describe('RangeCalendar', () => {
     ).toBe(1);
   });
 
-  it.only('left panel shows next buttons when right panel shows year panel', () => {
+  it('left panel shows next buttons when right panel shows year panel', () => {
     const { container } = render(<RangeCalendar />);
 
     const rightYearButton = container.querySelector(
@@ -249,7 +249,7 @@ describe('RangeCalendar', () => {
     ).toBe(1);
   });
 
-  it.only('right panel shows prev buttons when left panel shows month panel', () => {
+  it('right panel shows prev buttons when left panel shows month panel', () => {
     const { container } = render(<RangeCalendar />);
     const leftMonthButton = container.querySelector(
       '.rc-calendar-range-left .rc-calendar-month-select',
@@ -268,7 +268,7 @@ describe('RangeCalendar', () => {
     ).toBe(1);
   });
 
-  it.only('right panel show prev buttons when left panel show year panel', () => {
+  it('right panel show prev buttons when left panel show year panel', () => {
     const { container } = render(<RangeCalendar />);
 
     const leftYearButton = container.querySelector(
@@ -289,7 +289,7 @@ describe('RangeCalendar', () => {
     ).toBe(1);
   });
 
-  it.only('left panel cannot select month after right panel', () => {
+  it('left panel cannot select month after right panel', () => {
     const { container } = render(<RangeCalendar />);
 
     const leftMonthButton = container.querySelector(
@@ -315,7 +315,7 @@ describe('RangeCalendar', () => {
     );
   });
 
-  it.only('right panel cannot select month before left panel', () => {
+  it('right panel cannot select month before left panel', () => {
     const { container } = render(<RangeCalendar />);
 
     const rightMonthButton = container.querySelector(
@@ -337,7 +337,7 @@ describe('RangeCalendar', () => {
     );
   });
 
-  it.only('onSelect works', () => {
+  it('onSelect works', () => {
     function onSelect(d) {
       expect(d[0].format(format)).toBe('2015-09-04');
       expect(d[1].format(format)).toBe('2015-10-02');
@@ -375,7 +375,7 @@ describe('RangeCalendar', () => {
     expect(rightInput.value).toBe('2015-10-02');
   });
 
-  it.only('onSelect works reversely', () => {
+  it('onSelect works reversely', () => {
     function onSelect(d) {
       expect(d[0].format(format)).toBe('2015-09-04');
       expect(d[1].format(format)).toBe('2015-09-14');
@@ -414,7 +414,7 @@ describe('RangeCalendar', () => {
     expect(rightInput.value).toBe('2015-09-14');
   });
 
-  it.only('onHoverChange works', () => {
+  it('onHoverChange works', () => {
     const onHoverChange = vi.fn();
     const { container } = render(
       <RangeCalendar onHoverChange={onHoverChange} />,
@@ -438,7 +438,7 @@ describe('RangeCalendar', () => {
   });
 
   describe('timePicker', () => {
-    it.only('defaultOpenValue should follow RangeCalendar[selectedValue|defaultSelectedValue] when it is set', () => {
+    it('defaultOpenValue should follow RangeCalendar[selectedValue|defaultSelectedValue] when it is set', () => {
       const timePicker = (
         <TimePickerPanel
           defaultValue={[
@@ -470,7 +470,7 @@ describe('RangeCalendar', () => {
       }
     });
 
-    it.only('selected start and end date can be same', () => {
+    it('selected start and end date can be same', () => {
       const timePicker = (
         <TimePickerPanel
           defaultValue={[
@@ -514,7 +514,7 @@ describe('RangeCalendar', () => {
       ).toBe('3');
     });
 
-    it.only("use timePicker's time", () => {
+    it("use timePicker's time", () => {
       const timePicker = (
         <TimePickerPanel
           defaultValue={[
@@ -582,7 +582,7 @@ describe('RangeCalendar', () => {
       expect(endInput.value).toBe('5/17/2025 06:59:59');
     });
 
-    it.only('should combine disabledTime', () => {
+    it('should combine disabledTime', () => {
       function newArray(start: number, end: number) {
         const result: number[] = [];
         for (let i = start; i < end; i++) {
@@ -716,7 +716,7 @@ describe('RangeCalendar', () => {
       expect(disabledTimeValus).toEqual(['00', '01', '02', '55', '56']);
     });
 
-    it.only('works fine when select reversely', () => {
+    it('works fine when select reversely', () => {
       // see: https://github.com/ant-design/ant-design/issues/6440
       const timePicker = (
         <TimePickerPanel
@@ -749,7 +749,7 @@ describe('RangeCalendar', () => {
       expect(inputEnd.value).toBe('5/17/2025 23:59:59');
     });
 
-    it.only('disabledTime when same day and different hour or different minute', () => {
+    it('disabledTime when same day and different hour or different minute', () => {
       // see: https://github.com/ant-design/ant-design/issues/8915
       function newArray(start: number, end: number) {
         const result: number[] = [];
@@ -944,7 +944,7 @@ describe('RangeCalendar', () => {
   });
 
   describe('controlled panels', () => {
-    it.only('render controlled panels correctly', () => {
+    it('render controlled panels correctly', () => {
       const { container: containerMonth } = render(
         <RangeCalendar mode={['month', 'month']} />,
       );
@@ -990,7 +990,7 @@ describe('RangeCalendar', () => {
       ).toBe(2);
     });
 
-    it.only('should work when start time is null in defaultValue', () => {
+    it('should work when start time is null in defaultValue', () => {
       const { container: containerNull } = render(
         <RangeCalendar defaultValue={[null, moment().endOf('month')]} />,
       );
@@ -1031,7 +1031,7 @@ describe('RangeCalendar', () => {
       ).toBe(1);
     });
 
-    it.only('should work when end time is null in defaultValue', () => {
+    it('should work when end time is null in defaultValue', () => {
       const { container: containerNull } = render(
         <RangeCalendar defaultValue={[moment().startOf('month'), null]} />,
       );
@@ -1071,7 +1071,7 @@ describe('RangeCalendar', () => {
       ).toBe(1);
     });
 
-    it.only('should work when start time is undefined in defaultValue', () => {
+    it('should work when start time is undefined in defaultValue', () => {
       const { container: containerUndefined } = render(
         <RangeCalendar defaultValue={[undefined, moment().endOf('month')]} />,
       );
@@ -1110,7 +1110,7 @@ describe('RangeCalendar', () => {
       ).toBe(1);
     });
 
-    it.only('should work when end time is undefined in defaultValue', () => {
+    it('should work when end time is undefined in defaultValue', () => {
       const { container: containerUndefined } = render(
         <RangeCalendar defaultValue={[moment().startOf('month'), undefined]} />,
       );
@@ -1149,21 +1149,21 @@ describe('RangeCalendar', () => {
       ).toBe(1);
     });
 
-    it.only('support controlled mode', () => {
-      let value: Moment[] = null;
+    it('support controlled mode', () => {
+      let value;
       function ControlledRangeCalendar() {
         const [mode, setMode] = useState<Mode[]>(['date', 'date']);
 
-          return (
-            <RangeCalendar
+        return (
+          <RangeCalendar
             mode={mode}
             onPanelChange={(v, updatedMode) => {
               value = v;
               setMode(updatedMode);
             }}
-            />
-          );
-        }
+          />
+        );
+      }
       const { container } = render(<ControlledRangeCalendar />);
 
       const [startMonthSelect, endMonthSelect] = container.querySelectorAll(
@@ -1269,17 +1269,46 @@ describe('RangeCalendar', () => {
     });
 
     it('controlled value works correctly', () => {
-      const wrapper = render(<RangeCalendar value={[moment(), moment()]} />);
-      const initialValue = wrapper.state('value');
-      expect(initialValue[0].isSame(initialValue[1], 'month')).toBe(true);
+      const initialValue = [moment(), moment()];
+      const { container, rerender } = render(
+        <RangeCalendar value={initialValue} />,
+      );
 
-      wrapper.setProps({ value: [moment(), moment()] });
-      const updatedValue = wrapper.state('value');
-      expect(updatedValue[0].isSame(updatedValue[1], 'month')).toBe(true);
+      // Check initial state - both panels should show the same month since values are same
+      const [initialLeftMonth, initialRightMonth] = container.querySelectorAll(
+        '.rc-calendar-month-select',
+      );
+      const [initialLeftYear, initialRightYear] = container.querySelectorAll(
+        '.rc-calendar-year-select',
+      );
+
+      // Since both values are moment(), left should be May and right should be June
+      expect(initialLeftMonth.textContent).toEqual('May');
+      expect(initialRightMonth.textContent).toEqual('Jun');
+      expect(initialLeftYear.textContent).toEqual('2025');
+      expect(initialRightYear.textContent).toEqual('2025');
+
+      // Update with new props using rerender
+      const updatedValue = [moment(), moment()];
+      rerender(<RangeCalendar value={updatedValue} />);
+
+      // Check updated state - should still show same behavior
+      const [updatedLeftMonth, updatedRightMonth] = container.querySelectorAll(
+        '.rc-calendar-month-select',
+      );
+      const [updatedLeftYear, updatedRightYear] = container.querySelectorAll(
+        '.rc-calendar-year-select',
+      );
+
+      // Should still show May/June 2025 since both new values are also moment()
+      expect(updatedLeftMonth.textContent).toEqual('May');
+      expect(updatedRightMonth.textContent).toEqual('Jun');
+      expect(updatedLeftYear.textContent).toEqual('2025');
+      expect(updatedRightYear.textContent).toEqual('2025');
     });
 
     // https://github.com/ant-design/ant-design/issues/15659
-    it.only('controlled value works correctly with mode', () => {
+    it('controlled value works correctly with mode', () => {
       const Demo = () => {
         const [value, setValue] = useState<Moment[]>([
           moment().add(-1, 'day'),
@@ -1290,19 +1319,19 @@ describe('RangeCalendar', () => {
         const handlePanelChange = (value: Moment[], mode: Mode[]) => {
           setValue(value);
           setMode([
-              mode[0] === 'date' ? 'month' : mode[0],
-              mode[1] === 'date' ? 'month' : mode[1],
+            mode[0] === 'date' ? 'month' : mode[0],
+            mode[1] === 'date' ? 'month' : mode[1],
           ]);
         };
 
-          return (
-            <RangeCalendar
+        return (
+          <RangeCalendar
             value={value}
             selectedValue={value}
             mode={mode}
             onPanelChange={handlePanelChange}
-            />
-          );
+          />
+        );
       };
 
       const { container } = render(<Demo />);
@@ -1325,21 +1354,21 @@ describe('RangeCalendar', () => {
     });
 
     // https://github.com/ant-design/ant-design/issues/15659
-    it.only('selected item style works correctly with mode year', () => {
+    it('selected item style works correctly with mode year', () => {
       const Demo = () => {
         const [value, setValue] = useState<Moment[]>([
           moment().add(-1, 'year'),
           moment(),
         ]);
 
-          return (
-            <RangeCalendar
+        return (
+          <RangeCalendar
             value={value}
             selectedValue={value}
-              mode={['year', 'year']}
+            mode={['year', 'year']}
             onPanelChange={setValue}
-            />
-          );
+          />
+        );
       };
 
       const { container } = render(<Demo />);
@@ -1356,13 +1385,13 @@ describe('RangeCalendar', () => {
     });
   });
 
-  it.only('can hide date inputs with showDateInput={false}', () => {
+  it('can hide date inputs with showDateInput={false}', () => {
     const { container } = render(<RangeCalendar showDateInput={false} />);
     expect(container).toMatchSnapshot();
   });
 
   describe('onInputSelect', () => {
-    it.only('trigger when date is valid', () => {
+    it('trigger when date is valid', () => {
       const handleInputSelect = vi.fn();
       const { container } = render(
         <RangeCalendar format={format} onInputSelect={handleInputSelect} />,
@@ -1379,7 +1408,7 @@ describe('RangeCalendar', () => {
       );
     });
 
-    it.only('not trigger when date is not valid', () => {
+    it('not trigger when date is not valid', () => {
       const handleInputSelect = vi.fn();
       const { container } = render(
         <RangeCalendar format={format} onInputSelect={handleInputSelect} />,
@@ -1394,7 +1423,7 @@ describe('RangeCalendar', () => {
     });
   });
 
-  it.only('controlled hoverValue changes', () => {
+  it('controlled hoverValue changes', () => {
     const start = moment(); // 2025-05-29
     const end = moment().add(2, 'day'); // 2025-05-31
     const { container, rerender } = render(
@@ -1411,7 +1440,7 @@ describe('RangeCalendar', () => {
     expect(lastDayCell.textContent).toBe('2'); // 2nd of June
   });
 
-  it.only('controlled selectedValue changes', () => {
+  it('controlled selectedValue changes', () => {
     const start = moment();
     const end = moment().add(2, 'day');
     const { container, rerender } = render(
@@ -1427,7 +1456,7 @@ describe('RangeCalendar', () => {
   });
 
   describe('onHoverChange', () => {
-    it.only('mouseEnter', () => {
+    it('mouseEnter', () => {
       const handleHoverChange = vi.fn();
       const start = moment();
       const end = moment().add(2, 'day');
@@ -1444,7 +1473,7 @@ describe('RangeCalendar', () => {
       expect(handleHoverChange).toHaveBeenCalledWith([start, end]);
     });
 
-    it.only('mouseHover', () => {
+    it('mouseHover', () => {
       const handleHoverChange = vi.fn();
       const start = moment();
       const end = moment().add(2, 'day');
@@ -1462,7 +1491,7 @@ describe('RangeCalendar', () => {
     });
   });
 
-  it.only('key control', () => {
+  it('key control', () => {
     const onChange = vi.fn();
     const onSelect = vi.fn();
     let keyDownEvent = 0;
@@ -1557,7 +1586,7 @@ describe('RangeCalendar', () => {
     expect(onSelect.mock.calls[0][0][1].format(format)).toEqual('2000-09-30');
   });
 
-  it.only('change input trigger calendar close', () => {
+  it('change input trigger calendar close', () => {
     const value = [moment(), moment().add(1, 'months')];
     const onSelect = vi.fn();
 
@@ -1568,10 +1597,10 @@ describe('RangeCalendar', () => {
     const input = container.querySelectorAll('input')[0];
 
     fireEvent.change(input, {
-        target: {
-          value: '1/1/2000',
-        },
-      });
+      target: {
+        value: '1/1/2000',
+      },
+    });
 
     expect(onSelect.mock.calls[0][1].source).toEqual('dateInput');
 
@@ -1581,59 +1610,67 @@ describe('RangeCalendar', () => {
   });
 
   it('date mode should not display same month', () => {
-    const FORMAT = 'YYYY-MM-DD';
     const sameDay = moment('2000-01-01');
-    const wrapper = render(<RangeCalendar defaultValue={[sameDay, sameDay]} />);
+    const { container } = render(
+      <RangeCalendar defaultValue={[sameDay, sameDay]} />,
+    );
 
-    // Should in different month
-    expect(
-      wrapper.find('CalendarPart').at(0).props().value.format(FORMAT),
-    ).toEqual('2000-01-01');
-    expect(
-      wrapper.find('CalendarPart').at(1).props().value.format(FORMAT),
-    ).toEqual('2000-02-01');
+    const [rangeLeftMonth, rangeRightMonth] = container.querySelectorAll(
+      '.rc-calendar-month-select',
+    );
 
-    // Back end to month panel
-    wrapper
-      .find('CalendarPart')
-      .at(1)
-      .find('.rc-calendar-month-select')
-      .simulate('click');
-    wrapper
-      .find('CalendarPart')
-      .at(1)
-      .find('.rc-calendar-month-panel-month')
-      .at(0)
-      .simulate('click');
-    expect(
-      wrapper.find('CalendarPart').at(0).props().value.format(FORMAT),
-    ).toEqual('1999-12-01');
-    expect(
-      wrapper.find('CalendarPart').at(1).props().value.format(FORMAT),
-    ).toEqual('2000-01-01');
+    // Should be different months initially
+    expect(rangeLeftMonth.textContent).toEqual('Jan');
+    expect(rangeRightMonth.textContent).toEqual('Feb');
 
-    // Back start to month panel
-    wrapper
-      .find('CalendarPart')
-      .at(0)
-      .find('.rc-calendar-month-select')
-      .simulate('click');
-    wrapper
-      .find('CalendarPart')
-      .at(0)
-      .find('.rc-calendar-month-panel-month')
-      .at(0)
-      .simulate('click');
-    expect(
-      wrapper.find('CalendarPart').at(0).props().value.format(FORMAT),
-    ).toEqual('2000-01-01');
-    expect(
-      wrapper.find('CalendarPart').at(1).props().value.format(FORMAT),
-    ).toEqual('2000-02-01');
+    // Click right panel month selector to open month panel
+    fireEvent.click(rangeRightMonth);
+
+    // Click the first month (January) in the month panel
+    const firstMonthButton = container.querySelector(
+      '.rc-calendar-month-panel-month',
+    );
+
+    fireEvent.click(firstMonthButton!);
+
+    const [updatedLeftMonth, updatedRightMonth] = container.querySelectorAll(
+      '.rc-calendar-month-select',
+    );
+    const [updatedLeftYear, updatedRightYear] = container.querySelectorAll(
+      '.rc-calendar-year-select',
+    );
+
+    expect(updatedLeftMonth.textContent).toEqual('Dec');
+    expect(updatedLeftYear.textContent).toEqual('1999');
+    expect(updatedRightMonth.textContent).toEqual('Jan');
+    expect(updatedRightYear.textContent).toEqual('2000');
+
+    // Now test the reverse - click left panel month selector
+    fireEvent.click(updatedLeftMonth);
+
+    // Click the first month (January) in the left panel's month panel
+    const leftFirstMonthButton = container.querySelectorAll(
+      '.rc-calendar-month-panel-month',
+    )[0];
+    fireEvent.click(leftFirstMonthButton);
+
+    // After selecting January in left panel, verify the final state
+    const [finalLeftMonth, finalRightMonth] = container.querySelectorAll(
+      '.rc-calendar-month-select',
+    );
+    const [finalLeftYear, finalRightYear] = container.querySelectorAll(
+      '.rc-calendar-year-select',
+    );
+
+    // Both panels should now show 2000, with left=Jan and right=Feb
+    expect(finalLeftMonth.textContent).toEqual('Jan');
+    expect(finalLeftYear.textContent).toEqual('2000');
+    expect(finalRightMonth.textContent).toEqual('Feb');
+    expect(finalRightYear.textContent).toEqual('2000');
   });
 
   it('render text correctly when range mode is both time', () => {
-    const RangeTimePicker = render(
+    const { container } = render(
       <RangeCalendar
         mode={['time', 'time']}
         timePicker={
@@ -1646,8 +1683,8 @@ describe('RangeCalendar', () => {
         }
       />,
     );
-    expect(RangeTimePicker.find('.rc-calendar-time-picker-btn').text()).toBe(
-      'select date',
-    );
+    expect(
+      container.querySelector('.rc-calendar-time-picker-btn')?.textContent,
+    ).toBe('select date');
   });
 });
